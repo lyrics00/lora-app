@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <style>
+    /* Ensure both single-image containers and carousel items have the same fixed height */
+    .image-container,
+    .carousel-item {
+      height: 250px; 
+      overflow: hidden;
+    }
+
+    /* Ensure images fill their container */
+    .image-container img,
+    .carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 8px;
+    }
+  </style>
+  <h2 class="mb-4 text-white">Search LoRAs</h2>
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <!-- Search text input -->
+      <input type="text" name="q" class="form-control" placeholder="Search LoRAs" value="{{ request.GET.q }}">
+      
+      <!-- Dropdown to select search field: Name or Location -->
+      <select name="search_type" class="form-select" style="max-width: 200px;">
+         <option value="name" {% if request.GET.search_type == "name" or not request.GET.search_type %}selected{% endif %}>By Name</option>
+         <option value="location" {% if request.GET.search_type == "location" %}selected{% endif %}>By Location</option>
+      </select>
+      
+      <!-- Dropdown for Status filtering (using your status_choices) -->
+      <select name="status" class="form-select" style="max-width: 200px;">
+         <option value="">All Statuses</option>
+         {% for value, label in status_choices %}
+           <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+         {% endfor %}
+      </select>
+      
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+    <div class="mt-2">
+      <label>Sort by:</label>
+      <select name="sort" onchange="this.form.submit()">
+        <option value="">-- Select --</option>
+        <option value="likes" {% if request.GET.sort == "likes" %}selected{% endif %}>Likes</option>
+        <option value="views" {% if request.GET.sort == "views" %}selected{% endif %}>Views</option>
+      </select>
+    </div>
+  </form>
+
+  <h2>Search Results</h2>
+  {% if loras %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for lora in loras %}
+        <div class="col">
+          <div class="card h-100 d-flex flex-column">
+            {% if lora.images.all %}
+              {% if lora.images.all|length > 1 %}
+                <div id="carousel-lora-{{ lora.pk }}" class="carousel slide" data-bs-ride="carousel" style="height:250px; overflow:hidden; border-radius:8px;">
+                  <div class="carousel-inner" style="height:250px;">
+                    {% for image in lora.images.all %}
+                      <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height:250px;">
+                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ lora.title }}" style="height:250px; object-fit:cover; border-radius:8px;">
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <button class="carousel-control-prev" type="button" data-bs-target="#carousel-lora-{{ lora.pk }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#carousel-lora-{{ lora.pk }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+              {% else %}
+                <div class="image-container">
+                  <img src="{{ lora.images.first.image.url }}" class="card-img-top" alt="{{ lora.title }}">
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="image-container">
+                <img src="https://cs3240loraapp.s3.amazonaws.com/items/default_item_image.png" class="card-img-top" alt="No Image">
+              </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ lora.title }}</h5>
+              <p class="card-text">{{ lora.description|truncatewords:20 }}</p>
+              <!-- Creator Info placed under description -->
+              <div class="mb-3">
+                <div class="d-flex align-items-center">
+                  {% if lora.librarian.image %}
+                    <img src="{{ lora.librarian.image.url }}" alt="{{ lora.librarian.username }}" class="rounded-circle me-2" width="40" height="40">
+                  {% else %}
+                    <img src="{% static 'images/default_profile.jpg' %}" alt="{{ lora.librarian.username }}" class="rounded-circle me-2" width="40" height="40">
+                  {% endif %}
+                  <div>
+                    <span class="fw-bold">{{ lora.librarian.username }}</span>
+                    {% if lora.librarian.email %}
+                      <small class="d-block">{{ lora.librarian.email }}</small>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <!-- Spacer to push footer content to bottom -->
+              <div class="mt-auto">
+                <!-- Top Row: Views and Likes -->
+                <div class="d-flex justify-content-between align-items-center">
+                  <small>
+                    <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+                    {{ lora.views }} views&nbsp;&nbsp;
+                    <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20" class="me-1">
+                    {{ lora.liked_by.count }} likes
+                  </small>
+                </div>
+                <!-- Second Row: Average Rating -->
+                <div class="d-flex align-items-center mt-2">
+                  <span class="me-2">Avg: {{ lora.rating|floatformat:"1" }}</span>
+                  <div class="rating-display d-inline">
+                    {% with avg=lora.rating|floatformat:"0"|default:"0" %}
+                      {% for i in "12345" %}
+                        {% if forloop.counter <= avg|add:"0" %}
+                          <img src="{% static 'listing_images/default-star-full.png' %}" alt="Star" width="16" height="16">
+                        {% else %}
+                          <img src="{% static 'listing_images/default-star-empty.png' %}" alt="Star" width="16" height="16">
+                        {% endif %}
+                      {% endfor %}
+                    {% endwith %}
+                  </div>
+                </div>
+                <!-- Third Row: Details Button moved below the review -->
+                <div class="d-flex justify-content-center mt-3">
+                  <a href="{% url 'listing_detail' lora.pk %}" class="btn btn-primary">View Details</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning">No LoRAs found.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

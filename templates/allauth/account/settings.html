@@ -1,0 +1,128 @@
+{% load i18n %}
+{% block hero_content %}
+  <style>
+    body {
+      background-color: #0d0d0d !important;
+    }
+
+    .hero-header {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 12px #ff1e56;
+    }
+
+    .hero-subtext {
+      color: #ccc;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(6px);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.25);
+    }
+
+    .card-header {
+      background: rgba(255, 30, 86, 0.15);
+      border-bottom: 1px solid rgba(255, 30, 86, 0.3);
+    }
+
+    .card-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 8px #ff1e56;
+    }
+
+    .list-group-item {
+      background-color: transparent;
+      border: 1px solid rgba(255, 30, 86, 0.1);
+      color: #e0e0e0;
+    }
+
+    .list-group-item a {
+      color: #ff1e56;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .list-group-item:hover {
+      background-color: rgba(255, 30, 86, 0.07);
+    }
+
+    .alert-info {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #ff1e56;
+      color: #ff1e56;
+    }
+
+    .alert-heading {
+      color: #ff1e56;
+    }
+  </style>
+
+  <div class="container text-center">
+    <h1 class="display-4 hero-header">{% trans "Account Settings" %}</h1>
+    <p class="lead hero-subtext">{% trans "Manage and update your account settings" %}</p>
+
+    {% if messages %}
+      <div class="alert alert-info mt-3" role="alert">
+        <h4 class="alert-heading">{% trans "Message:" %}</h4>
+        <ul class="list-inline mb-0">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-header text-center">
+            <h3 class="mb-0">{% trans "Account Settings" %}</h3>
+          </div>
+          <div class="card-body">
+            <ul class="list-group">
+              {% if user.is_authenticated %}
+                {% url 'account_email' as email_url %}
+                {% if email_url %}
+                  <li class="list-group-item"><a href="{{ email_url }}">{% trans "Change Email" %}</a></li>
+                {% endif %}
+                {% url 'account_change_password' as change_password_url %}
+                {% if change_password_url %}
+                  <li class="list-group-item"><a href="{{ change_password_url }}">{% trans "Change Password" %}</a></li>
+                {% endif %}
+                {% url 'socialaccount_connections' as connections_url %}
+                {% if connections_url %}
+                  <li class="list-group-item"><a href="{{ connections_url }}">{% trans "Account Connections" %}</a></li>
+                {% endif %}
+                {% url 'mfa_index' as mfa_url %}
+                {% if mfa_url %}
+                  <li class="list-group-item"><a href="{{ mfa_url }}">{% trans "Two-Factor Authentication" %}</a></li>
+                {% endif %}
+                {% url 'usersessions_list' as sessions_url %}
+                {% if sessions_url %}
+                  <li class="list-group-item"><a href="{{ sessions_url }}">{% trans "Sessions" %}</a></li>
+                {% endif %}
+                {% url 'account_logout' as logout_url %}
+                {% if logout_url %}
+                  <li class="list-group-item"><a href="{{ logout_url }}">{% trans "Sign Out" %}</a></li>
+                {% endif %}
+              {% else %}
+                {% url 'account_login' as login_url %}
+                {% if login_url %}
+                  <li class="list-group-item"><a href="{{ login_url }}">{% trans "Sign In" %}</a></li>
+                {% endif %}
+                {% url 'account_signup' as signup_url %}
+                {% if signup_url %}
+                  <li class="list-group-item"><a href="{{ signup_url }}">{% trans "Sign Up" %}</a></li>
+                {% endif %}
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock hero_content %}

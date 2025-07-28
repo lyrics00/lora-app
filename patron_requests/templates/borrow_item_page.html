@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block hero_content %}
+  <style>
+    .borrow-form-wrapper {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.3);
+      backdrop-filter: blur(6px);
+      color: #fff;
+    }
+
+    .borrow-form-wrapper h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 8px #ff1e56;
+    }
+
+    .borrow-form-wrapper p {
+      color: #ccc;
+      font-size: 1.1rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(255, 30, 86, 0.15);
+    }
+
+    .btn-primary {
+      background-color: transparent;
+      border: 2px solid #ff1e56;
+      color: #ff1e56;
+      font-weight: bold;
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 30, 86, 0.3);
+    }
+
+    .btn-primary:hover {
+      background-color: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.6);
+    }
+  </style>
+
+  <div class="container my-5 borrow-form-wrapper">
+    <h2 class="mb-4">Borrow <em>{{ item.title }}</em></h2>
+    <p>Please enter the number of days you wish to borrow this item:</p>
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary mt-3">Borrow Now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

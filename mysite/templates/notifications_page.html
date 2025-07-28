@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block hero_content %}
+  <style>
+    .notif-wrapper {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.3);
+    }
+
+    .notif-wrapper h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 10px #ff1e56;
+    }
+
+    .notif-list .list-group-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: none;
+      color: #e0e0e0;
+      transition: background 0.3s ease;
+    }
+
+    .notif-list .list-group-item.bg-light {
+      background-color: rgba(255, 255, 255, 0.07) !important;
+      color: #aaa;
+    }
+
+    .notif-list .list-group-item:hover {
+      background: rgba(255, 30, 86, 0.1);
+    }
+
+    .notif-list strong {
+      color: #ffffff;
+    }
+
+    .notif-list em {
+      color: #ff1e56;
+    }
+
+    .notif-list small {
+      color: #999;
+    }
+
+    .notif-list p {
+      margin-bottom: 0.2rem;
+    }
+  </style>
+
+  <div class="container my-5 notif-wrapper">
+    <h2 class="mb-4">Your Notifications</h2>
+    <div class="card bg-transparent border-0">
+      <div class="card-body notif-list">
+        {% if notifications %}
+          <ul class="list-group list-group-flush">
+            {% for note in notifications %}
+              <li class="list-group-item {% if not note.unread %}bg-light{% endif %}">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>{{ note.actor.username }}</strong> {{ note.verb }}
+                    {% if note.target %}
+                      <em>{{ note.target.title|default:"item" }}</em>
+                    {% endif %}
+                    <p class="text-muted">{{ note.description }}</p>
+                  </div>
+                  <small>{{ note.timestamp|date:"M d, Y H:i" }}</small>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="mb-0 text-muted">You have no notifications.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block hero_content %}
+  <style>
+    .support-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 10px #ff1e56;
+    }
+
+    .support-header p {
+      color: #ccc;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(6px);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(255, 30, 86, 0.2);
+      color: #e0e0e0;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff1e56;
+      text-shadow: 0 0 6px #ff1e56;
+    }
+
+    ul li strong {
+      color: #fff;
+    }
+
+    .btn-outline-primary {
+      border: 2px solid #ff1e56;
+      color: #ff1e56;
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+      background-color: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 12px rgba(255, 30, 86, 0.5);
+    }
+
+    .btn-primary {
+      background-color: transparent;
+      border: 2px solid #ff1e56;
+      color: #ff1e56;
+      font-weight: bold;
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 12px rgba(255, 30, 86, 0.6);
+    }
+
+    .alert-success {
+      background-color: rgba(0, 255, 128, 0.1);
+      color: #00ff88;
+      border: 1px solid #00ff88;
+    }
+
+    input, textarea {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 30, 86, 0.2);
+    }
+
+    input:focus, textarea:focus {
+      border-color: #ff1e56;
+      box-shadow: 0 0 6px rgba(255, 30, 86, 0.4);
+    }
+  </style>
+
+  <div class="container py-5">
+    <div class="text-center mb-5 support-header">
+      <h1 class="display-5 fw-bold">❓ Help & Support</h1>
+      <p class="lead">Browse common questions or send us a message directly.</p>
+    </div>
+
+    <!-- FAQ Section Preview -->
+    <div class="row mb-5">
+      <div class="col-lg-10 mx-auto">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title">📌 Frequently Asked Questions (Top 5)</h3>
+            <ul class="list-unstyled mt-3">
+              <li><strong>How do I upload a LoRA model?</strong><br>Go to the LoRA Resources page and use the upload form at the bottom.</li>
+              <li class="mt-3"><strong>Where are uploaded models stored?</strong><br>Models are stored securely in Amazon S3.</li>
+              <li class="mt-3"><strong>What file format should my model be?</strong><br>We currently support .safetensors and .pt formats.</li>
+              <li class="mt-3"><strong>What resolution should my training images be?</strong><br>Use 512x512 resolution unless otherwise noted.</li>
+              <li class="mt-3"><strong>What is the recommended learning rate?</strong><br>Start with 1e-4 to 5e-5 for best results.</li>
+            </ul>
+            <div class="text-center mt-4">
+              <a href="{% url 'faq_page' %}" class="btn btn-outline-primary">See More FAQs</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title">📬 Contact Us</h3>
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="post">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "layouts/base.html" %}
+{% load static i18n %}
+{% load django_bootstrap5 %}
+
+{% block title %}{% trans "Edit Profile" %}{% endblock %}
+
+{% block hero_content %}
+  <style>
+    .edit-profile-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 30, 86, 0.2);
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.1);
+      color: #e0e0e0;
+    }
+
+    .edit-profile-card .card-header {
+      background: linear-gradient(135deg, #8b0000, #ff1e56);
+      color: white;
+      text-shadow: 0 0 5px #ff1e56;
+    }
+
+    .btn-save-red {
+      background: transparent;
+      border: 1px solid #ff4d4d;
+      color: #ffb3b3;
+      padding: 0.5rem 1.5rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 8px;
+      animation: pulseRed 2s infinite;
+      transition: 0.3s ease-in-out;
+    }
+
+    .btn-save-red:hover {
+      background-color: #ff4d4d;
+      color: #000;
+      box-shadow: 0 0 12px #ff4d4d;
+      animation: none;
+    }
+
+    @keyframes pulseRed {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 30, 86, 0.3); }
+      50% { box-shadow: 0 0 20px rgba(255, 30, 86, 0.6); }
+    }
+
+    .form-label {
+      color: #ff4d4d;
+      text-shadow: 0 0 3px #ff4d4d;
+    }
+
+    .form-control {
+      background-color: #1a1a1a;
+      border: 1px solid rgba(255, 30, 86, 0.2);
+      color: #f0f0f0;
+      font-size: 0.85rem;
+    }
+
+    .form-control:focus {
+      border-color: #ff1e56;
+      box-shadow: 0 0 8px #ff1e56;
+      background-color: #111;
+      color: #fff;
+    }
+
+    .form-text, .invalid-feedback {
+      color: #ff8080;
+      font-size: 0.75rem;
+    }
+  </style>
+
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-sm edit-profile-card">
+          <div class="card-header">
+            <h4 class="mb-0">{% trans "Edit Profile" %}</h4>
+          </div>
+          <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              {% bootstrap_form form layout="horizontal" %}
+              <div class="form-group row mt-4">
+                <div class="col-sm-12 text-end">
+                  <button type="submit" class="btn btn-save-red">
+                    {% trans "Save Changes" %}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

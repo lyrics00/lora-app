@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block hero_content %}
+  <style>
+    .faq-header {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 10px #ff1e56;
+    }
+
+    .faq-lead {
+      color: #ddd;
+    }
+
+    .accordion-button {
+      background-color: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .accordion-button:hover {
+      background-color: rgba(255, 30, 86, 0.1);
+    }
+
+    .accordion-button:focus {
+      box-shadow: 0 0 10px rgba(255, 30, 86, 0.4);
+      border-color: transparent;
+    }
+
+    .accordion-button.collapsed {
+      color: #ccc;
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .accordion-body {
+      background-color: rgba(255, 255, 255, 0.02);
+      color: #ccc;
+      border-top: 1px solid rgba(255, 30, 86, 0.1);
+    }
+
+    .accordion-item {
+      background-color: transparent;
+      border: 1px solid rgba(255, 30, 86, 0.2);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 10px rgba(255, 30, 86, 0.1);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid #ff1e56;
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: #ff1e56;
+      color: #000;
+    }
+  </style>
+
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h1 class="display-5 fw-bold faq-header">📚 Frequently Asked Questions</h1>
+      <p class="lead faq-lead">Here are answers to some of the most common questions we receive about LoRA training, uploads, and best practices.</p>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="accordion" id="faqAccordion">
+
+          {% for i, faq in faqs %}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ i }}">
+              <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#collapse{{ i }}"
+                      aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                      aria-controls="collapse{{ i }}">
+                {{ faq.question }}
+              </button>
+            </h2>
+            <div id="collapse{{ i }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                 aria-labelledby="heading{{ i }}" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                {{ faq.answer }}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+
+        <div class="text-center mt-4">
+          <a href="{% url 'help_page' %}" class="btn btn-secondary">← Back to Help</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Your Role{% endblock %}
+
+{% block hero_content %}
+  <style>
+    .futuristic-form {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.3);
+      color: #ff1e56;
+    }
+
+    .futuristic-form h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      color: #ff1e56;
+      text-shadow: 0 0 5px #ff1e56, 0 0 10px #ff1e56;
+    }
+
+    .form-check-label {
+      color: #ffffff;
+      font-size: 1.1rem;
+      transition: color 0.3s;
+    }
+
+    .form-check-input:checked + .form-check-label {
+      color: #ff1e56;
+      text-shadow: 0 0 5px #ff1e56;
+    }
+
+    .form-check-input {
+      background-color: #222;
+      border-color: #ff1e56;
+    }
+
+    .form-check-input:checked {
+      background-color: #ff1e56;
+      border-color: #ff1e56;
+    }
+
+    .futuristic-btn {
+      background: transparent;
+      border: 2px solid #ff1e56;
+      color: #ff1e56;
+      padding: 0.5rem 1.5rem;
+      border-radius: 25px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 30, 86, 0.4);
+    }
+
+    .futuristic-btn:hover {
+      background: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .form-check {
+      margin-top: 1rem;
+    }
+
+    .hero-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+
+    .container {
+      max-width: 500px;
+    }
+  </style>
+
+  <div class="container futuristic-form">
+    <h2>Select Your Role</h2>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="role" id="patron" value="patron" required>
+        <label class="form-check-label" for="patron">Patron</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="role" id="librarian" value="librarian" required>
+        <label class="form-check-label" for="librarian">Librarian</label>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="futuristic-btn mt-4">Submit</button>
+      </div>
+    </form>
+  </div>
+{% endblock hero_content %}

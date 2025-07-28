@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block hero_content %}
+<div class="container my-5">
+  <h2 class="mb-4">Borrow {{ lora.title }}</h2>
+  {% if lora.location %}
+    <p><strong>Location:</strong> {{ lora.location }}</p>
+  {% endif %}
+  <p>Please select a due date and time for returning this LoRA:</p>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+          {{ form.due_date.label_tag }}
+          {% if form.due_date.errors %}
+            {{ form.due_date|add_class:"form-control is-invalid" }}
+          {% else %}
+            {{ form.due_date|add_class:"form-control" }}
+          {% endif %}
+          {% for error in form.due_date.errors %}
+            <div class="invalid-feedback d-block">
+              {{ error }}
+            </div>
+          {% endfor %}
+          <small class="form-text text-muted">{{ form.due_date.help_text }}</small>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Borrow Now</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
