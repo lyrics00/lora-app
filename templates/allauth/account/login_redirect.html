@@ -1,0 +1,14 @@
+{% extends "layouts/base.html" %}
+{% load i18n allauth %}
+
+{% block head_title %}{% translate "Sign In" %} | {{ provider }}{% endblock head_title %}
+
+{% block extra_head %}
+  <meta http-equiv="refresh" content="0;URL='{{ redirect_to }}'" />
+{% endblock extra_head %}
+
+{% block content %}
+  {% element p %}
+    <a href="{{ redirect_to }}">{% translate "Continue" %}</a>
+  {% endelement %}
+{% endblock content %}

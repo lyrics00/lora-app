@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block hero_content %}
+<style>
+
+
+</style>
+<div class="container py-5">
+  <!-- Listing Card -->
+  <div class="card mb-5 shadow">
+    <div class="row no-gutters">
+      {% if listing.image %}
+      <div class="col-md-4">
+        <img src="{{ listing.image.url }}" class="card-img" alt="{{ listing.title }}">
+      </div>
+      {% endif %}
+      <div class="col-md-8">
+        <div class="card-body">
+          <h2 class="card-title">{{ listing.title }}</h2>
+          <p class="card-text">{{ listing.description }}</p>
+          <p class="card-text text-muted">
+            <small>Posted on {{ listing.created_at|date:"M d, Y" }}</small>
+          </p>
+          <!-- Owner Info Section -->
+          <div class="d-flex align-items-center mt-3">
+            {% if listing.librarian.image %}
+              <img src="{{ listing.librarian.image.url }}" alt="{{ listing.librarian.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% else %}
+              <img src="{% static 'images/default_profile.jpg' %}" alt="{{ listing.librarian.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% endif %}
+            <div>
+              <span class="h6 text-dark mb-0">{{ listing.librarian.username }}</span>
+              {% if listing.librarian.email %}
+                <br><small class="text-dark">{{ listing.librarian.email }}</small>
+              {% endif %}
+            </div>
+          </div>
+          <!-- Views & Likes Block -->
+          <div class="mt-3">
+            <small class="d-block">
+              <span id="like-count-{{ listing.pk }}">{{ listing.like_count }}</span> likes&nbsp;
+              <a href="{% url 'like_listing' listing.pk %}" class="like-btn-detail" data-listing-id="{{ listing.pk }}" style="display:inline;" onmousedown="this.blur();" tabindex="-1">{% if user in listing.liked_by.all %}<img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20">{% else %}<img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="20" height="20">{% endif %}</a>&nbsp;|&nbsp;
+              <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+              {{ listing.views }} views
+            </small>
+          </div>
+          <!-- Borrowing Button / Status Badge -->
+          <div class="mt-2">
+            {% if listing.status == 'checked_in' %}
+              <a href="{% url 'borrow_item' listing.pk %}" class="btn btn-primary">Borrow</a>
+            {% elif listing.status == 'in_circulation' %}
+              <span class="badge bg-warning text-dark">In Circulation</span>
+            {% elif listing.status == 'being_repaired' %}
+              <span class="badge bg-danger">Being Repaired</span>
+            {% endif %}
+          </div>
+
+          <!-- Edit Status Button for Librarians -->
+          {% if user.is_authenticated and user == listing.librarian %}
+            <div class="mt-3">
+              <a href="{% url 'item_edit' listing.pk %}" class="btn btn-secondary">Edit Item</a>
+            </div>
+            <div class="mt-3">
+              <a href="{% url 'item_edit_status' listing.pk %}" class="btn btn-secondary">Edit Item Status</a>
+            </div>
+          {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="container mb-5 p-4 bg-light rounded">
+    <h3>Comments</h3>
+    {% if comments %}
+      <!-- Inside your Comments Section loop in listing_detail.html -->
+      {% for comment in comments %}
+        <div class="comment-container p-3 mb-3 bg-white shadow-sm border rounded">
+          <div class="d-flex">
+            {% if comment.user.image %}
+              <img src="{{ comment.user.image.url }}" alt="{{ comment.user.username }}" class="rounded-circle me-3" width="50" height="50">
+            {% else %}
+              <img src="{% static 'images/default_profile.jpg' %}" alt="{{ comment.user.username }}" class="rounded-circle me-3" width="50" height="50">
+            {% endif %}
+            <div>
+              <h6 class="mb-1">
+                {{ comment.user.username }}
+                {% if comment.user.id == listing.librarian.id %}
+                  <span class="badge bg-info text-dark ms-2">Listing Owner</span>
+                {% endif %}
+                <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y h:i A" }}</small>
+              </h6>
+              <p class="mb-2">{{ comment.comment }}</p>
+              <div class="d-flex align-items-center">
+                <small>
+                  <span id="comment-like-count-{{ comment.pk }}">{{ comment.like_count }}</span> likes
+                </small>
+                <a href="{% url 'like_comment' comment.pk %}" class="like-btn-comment ms-3" data-comment-id="{{ comment.pk }}" onmousedown="this.blur();" tabindex="-1">
+                  {% if user in comment.liked_by.all %}
+                    <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="16" height="16">
+                  {% else %}
+                    <img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="16" height="16">
+                  {% endif %}
+                </a>
+                {% if user.is_authenticated and comment.user == user %}
+                  <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-sm btn-outline-danger ms-3">Delete</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-info">
+        No comments have been added yet.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Comment Form -->
+  <div class="container mb-5">
+    <div class="card p-4">
+      <h4>Add a Comment</h4>
+      {% if user.is_authenticated %}
+        <form method="post">
+          {% csrf_token %}
+          {{ comment_form|crispy }}
+          <div class="text-right mt-3">
+            <button type="submit" class="btn btn-primary">Submit Comment</button>
+          </div>
+        </form>
+      {% else %}
+        <p>Please <a href="{% url 'account_login' %}">login</a> to add a comment.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- AJAX-like Script for Updating Like Icon and Count -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Listing like button handler
+    const likeBtnDetail = document.querySelector('.like-btn-detail');
+    if (likeBtnDetail) {
+      likeBtnDetail.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.href;
+        const listingId = this.getAttribute('data-listing-id');
+        const btn = this;
+        
+        fetch(url, { credentials: 'include' })
+          .then(response => {
+            if (!response.ok) throw new Error('Network error: ' + response.status);
+            return response.json();
+          })
+          .then(data => {
+            const likeCountEl = document.getElementById('like-count-' + listingId);
+            likeCountEl.textContent = data.like_count;
+            if (data.liked) {
+              btn.innerHTML = '<img src="{% static "listing_images/like_icon.png" %}" alt="Liked Icon" width="20" height="20">';
+            } else {
+              btn.innerHTML = '<img src="{% static "listing_images/no_like_icon.png" %}" alt="No Like Icon" width="20" height="20">';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    }
+    
+    // Comment like button handler
+    const commentLikeBtns = document.querySelectorAll('.like-btn-comment');
+    commentLikeBtns.forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.href;
+        const commentId = this.getAttribute('data-comment-id');
+        const currentBtn = this;
+        
+        fetch(url, { credentials: 'include' })
+          .then(response => {
+            if (!response.ok) throw new Error('Network error: ' + response.status);
+            return response.json();
+          })
+          .then(data => {
+            const likeCountEl = document.getElementById('comment-like-count-' + commentId);
+            likeCountEl.textContent = data.like_count;
+            if (data.liked) {
+              currentBtn.innerHTML = '<img src="{% static "listing_images/like_icon.png" %}" alt="Liked Icon" width="16" height="16">';
+            } else {
+              currentBtn.innerHTML = '<img src="{% static "listing_images/no_like_icon.png" %}" alt="No Like Icon" width="16" height="16">';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    });
+  });
+  </script>
+{% endblock %}

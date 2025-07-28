@@ -1,0 +1,38 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+  <style>
+    .futuristic-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 1rem;
+      min-height: 60vh;
+    }
+
+    .futuristic-panel {
+      width: 100%;
+      max-width: 800px;
+      padding: 2rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.08);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .futuristic-panel:hover {
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    }
+  </style>
+
+  <div class="futuristic-wrapper">
+    <div class="futuristic-panel">
+      {% block page_content %}
+        <h2 class="text-center" style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">Placeholder Content</h2>
+        <p class="text-center" style="color: #ccc;">Drop your content here. This panel is styled to match your chrome-inspired layout.</p>
+      {% endblock page_content %}
+    </div>
+  </div>
+{% endblock content %}

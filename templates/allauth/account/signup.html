@@ -1,0 +1,98 @@
+{% extends "layouts/entrance.html" %}
+{% load allauth i18n %}
+
+{% block head_title %}
+  {% trans "Signup" %}
+{% endblock head_title %}
+
+{% block extra_head %}
+  <style>
+    /* Wider signup container */
+    .signup-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    /* Improved card styling */
+    .card {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .card-header {
+      background-color: #007bff;
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      padding: 1rem;
+      text-align: center;
+    }
+    .card-body {
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    /* Style for link inside the text */
+    .card-body a.text-decoration-underline {
+      color: #007bff;
+    }
+  </style>
+{% endblock extra_head %}
+
+{% block hero_content %}
+<div class="row justify-content-center">
+  <div class="col-12 signup-container">
+    <div class="card shadow-sm">
+      <!-- Card Header -->
+      <div class="card-header">
+        {% element h1 %}
+          {% trans "Sign Up" %}
+        {% endelement %}
+      </div>
+      <!-- Card Body -->
+      <div class="card-body">
+        <div class="mb-3 text-center">
+          {% setvar link %}
+            <a href="{{ login_url }}" class="text-decoration-underline">
+          {% endsetvar %}
+          {% setvar end_link %}
+            </a>
+          {% endsetvar %}
+          {% element p %}
+            {% blocktranslate %}
+              Already have an account? Then please {{ link }}sign in{{ end_link }}.
+            {% endblocktranslate %}
+          {% endelement %}
+        </div>
+        {% if not SOCIALACCOUNT_ONLY %}
+          {% url 'account_signup' as action_url %}
+          {% element form form=form method="post" action=action_url tags="entrance,signup" %}
+            {% slot body %}
+              {% csrf_token %}
+              {% element fields form=form unlabeled=True %}
+              {% endelement %}
+              {{ redirect_field }}
+            {% endslot %}
+            {% slot actions %}
+              <div class="d-grid gap-2">
+                {% element button tags="prominent,signup" type="submit" %}
+                  {% trans "Sign Up" %}
+                {% endelement %}
+              </div>
+            {% endslot %}
+          {% endelement %}
+        {% endif %}
+        {% if PASSKEY_SIGNUP_ENABLED %}
+          {% element hr %}{% endelement %}
+          {% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
+            {% trans "Sign up using a passkey" %}
+          {% endelement %}
+        {% endif %}
+        {% if SOCIALACCOUNT_ENABLED %}
+          {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock hero_content %}

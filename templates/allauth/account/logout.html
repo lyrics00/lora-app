@@ -1,0 +1,30 @@
+{% extends "layouts/entrance.html" %}
+{% load allauth i18n %}
+
+{% block head_title %}
+  {% trans "Sign Out" %}
+{% endblock head_title %}
+
+{% block hero_content %}
+<div class="card shadow-sm mx-auto" style="max-width: 500px;">
+  <div class="card-header bg-primary text-white text-center">
+    <h3 class="mb-0">{% trans "Sign Out" %}</h3>
+  </div>
+  <div class="card-body">
+    <p class="text-center">{% trans "Are you sure you want to sign out?" %}</p>
+    {% url 'account_logout' as action_url %}
+    <form method="post" action="{{ action_url }}">
+      {% csrf_token %}
+      {{ redirect_field }}
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-danger">
+          {% trans "Sign Out" %}
+        </button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+          {% trans "Cancel" %}
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock hero_content %}
