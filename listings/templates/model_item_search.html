@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <h2 class="mb-4 text-white section-header-animated">Add LoRAs to Model: {{ model.title }}</h2>
+  
+  <!-- Search Form -->
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Search LoRAs" value="{{ query }}">
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+  </form>
+  
+  <!-- LoRAs Grid rendered as Card List -->
+  {% if loras %}
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for lora in loras %}
+      <div class="col">
+        <div class="card h-100 d-flex flex-column">
+          {% if lora.images.all %}
+            {% if lora.images.all|length > 1 %}
+              <!-- Carousel if multiple images -->
+              <div id="carousel-lora-{{ lora.pk }}" class="carousel slide" data-bs-ride="carousel" style="height:250px; overflow:hidden; border-radius:8px;">
+                <div class="carousel-inner" style="height:250px;">
+                  {% for image in lora.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height:250px;">
+                      <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ lora.title }}" style="height:250px; object-fit:cover; border-radius:8px;">
+                    </div>
+                  {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-lora-{{ lora.pk }}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel-lora-{{ lora.pk }}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            {% else %}
+              <img src="{{ lora.images.first.image.url }}" class="card-img-top" alt="{{ lora.title }}" style="object-fit:cover; max-height:250px;">
+            {% endif %}
+          {% else %}
+            <img src="https://cs3240loraapp.s3.amazonaws.com/items/default_item_image.png" class="card-img-top" alt="No Image">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ lora.title }}</h5>
+            <p class="card-text">{{ lora.description|truncatewords:15 }}</p>
+            <!-- Spacer to push footer content to bottom -->
+            <div class="mt-auto">
+              <!-- Top Row: Views, Likes and Average Rating -->
+              <div class="d-flex justify-content-between align-items-center">
+                <small>
+                  <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+                  {{ lora.views }} views&nbsp;&nbsp;
+                  <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20" class="me-1">
+                  {{ lora.liked_by.count }} likes
+                </small>
+              </div>
+              <div class="d-flex align-items-center mt-2">
+                <span class="me-2">Avg: {{ lora.rating|floatformat:"1" }}</span>
+                <div class="rating-display d-inline">
+                  {% with avg=lora.rating|floatformat:"0"|default:"0" %}
+                    {% for i in "12345" %}
+                      {% if forloop.counter <= avg|add:"0" %}
+                        <img src="{% static 'listing_images/default-star-full.png' %}" alt="Star" width="16" height="16">
+                      {% else %}
+                        <img src="{% static 'listing_images/default-star-empty.png' %}" alt="Star" width="16" height="16">
+                      {% endif %}
+                    {% endfor %}
+                  {% endwith %}
+                </div>
+              </div>
+              <!-- Bottom Row: Action Buttons -->
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <a href="{% url 'listing_detail' lora.pk %}" class="btn btn-primary">View LoRA</a>
+                <a href="{% url 'model_add_lora' model.pk lora.pk %}" class="btn btn-success">Add to Model</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="alert alert-info">No LoRAs found matching your criteria.</div>
+  {% endif %}
+  
+  <!-- Back to Model Details Button -->
+  <div class="mt-4">
+    <a href="{% url 'model_detail' model.pk %}" class="btn btn-secondary">Back to Model</a>
+  </div>
+</div>
+{% endblock %}

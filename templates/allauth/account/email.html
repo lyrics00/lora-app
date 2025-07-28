@@ -1,0 +1,102 @@
+{% extends "layouts/base.html" %}
+{% load allauth i18n django_bootstrap5 widget_tweaks %}
+
+{% block head_title %}
+    {% trans "Email Addresses" %}
+{% endblock head_title %}
+
+{% block hero_content %}
+<div class="d-flex justify-content-center my-5">
+  <div class="col-lg-8 col-md-10">
+    <div class="card">
+      <div class="card-body p-5">
+        <h1 class="mb-4 text-center">{% trans "Email Addresses" %}</h1>
+        {% if emailaddresses %}
+          <p class="mb-3 text-light">
+            {% trans "The following email addresses are associated with your account:" %}
+          </p>
+          {% url 'account_email' as email_url %}
+          <form action="{{ email_url }}" method="post">
+            {% csrf_token %}
+            <div class="list-group mb-3">
+              {% for radio in emailaddress_radios %}
+                {% with emailaddress=radio.emailaddress %}
+                <div class="list-group-item bg-white">
+                  <div class="form-check">
+                    <input type="radio"
+                           name="email"
+                           id="{{ radio.id }}"
+                           value="{{ emailaddress.email }}"
+                           class="form-check-input"
+                           {% if radio.checked %}checked{% endif %} />
+                    <label class="form-check-label" for="{{ radio.id }}">
+                      <span class="text-dark">{{ emailaddress.email }}</span>
+                      {% if emailaddress.verified %}
+                        <span class="badge bg-success">{% trans "Verified" %}</span>
+                      {% else %}
+                        <span class="badge bg-warning text-dark">{% trans "Unverified" %}</span>
+                      {% endif %}
+                      {% if emailaddress.primary %}
+                        <span class="badge bg-info text-dark">{% trans "Primary" %}</span>
+                      {% endif %}
+                    </label>
+                  </div>
+                </div>
+                {% endwith %}
+              {% endfor %}
+            </div>
+            <div class="mb-3">
+              <button type="submit" name="action_primary" class="btn btn-primary me-2">
+                {% trans "Make Primary" %}
+              </button>
+              <button type="submit" name="action_send" class="btn btn-secondary me-2">
+                {% trans "Re-send Verification" %}
+              </button>
+              <button type="submit" name="action_remove" class="btn btn-danger">
+                {% trans "Remove" %}
+              </button>
+            </div>
+          </form>
+        {% else %}
+          {% include "account/snippets/warn_no_email.html" %}
+        {% endif %}
+        {% if can_add_email %}
+          <hr />
+          <h4 class="mb-3 text-light">{% trans "Add Email Address" %}</h4>
+          {% url 'account_email' as action_url %}
+          <form action="{{ action_url }}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              {{ form.email|add_class:"form-control bg-white text-dark" }}
+              {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                  <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
+            </div>
+            <button type="submit" name="action_add" class="btn btn-primary">
+              {% trans "Add Email" %}
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock hero_content %}
+
+{% block extra_body %}
+<script>
+    (function () {
+        var message = "{% trans 'Do you really want to remove the selected email address?' %}";
+        var actions = document.getElementsByName("action_remove");
+        if (actions.length) {
+            actions[0].addEventListener("click", function (e) {
+                if (!confirm(message)) {
+                    e.preventDefault();
+                }
+            });
+        }
+    })();
+</script>
+{% endblock extra_body %}

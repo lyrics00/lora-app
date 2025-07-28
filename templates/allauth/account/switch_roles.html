@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+{% load i18n django_bootstrap5 static %}
+
+{% block head_title %}{% trans "Switch Role" %}{% endblock head_title %}
+
+{% block extra_head %}
+  <style>
+    /* Full-height container (adjust 70px to your navbar height) */
+    .container-full {
+      height: calc(100vh - 100px);
+    }
+    /* Reduce font size for card contents */
+    .card,
+    .card * {
+      font-size: 0.75rem;
+    }
+  </style>
+{% endblock extra_head %}
+
+{% block hero_content %}
+<div class="container-fluid p-0 container-full">
+  <div class="d-flex align-items-center justify-content-center h-100">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white text-center">
+          <h3 class="mb-0">{% trans "Switch Role" %}</h3>
+        </div>
+        <div class="card-body">
+          <p class="text-center">{% trans "Select your desired role:" %}</p>
+          <div class="d-grid gap-2">
+            <a href="{% url 'switch_role_librarian' %}" class="btn btn-outline-primary">
+              {% trans "Switch to Librarian" %}
+            </a>
+            <a href="{% url 'switch_role_patron' %}" class="btn btn-outline-secondary">
+              {% trans "Switch to Patron" %}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock hero_content %}

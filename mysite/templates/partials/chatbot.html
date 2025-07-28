@@ -1,0 +1,191 @@
+<style>
+  #chatbot-tab {
+    position: fixed;
+    top: 60%;
+    left: 0;
+    z-index: 1050;
+    width: 48px;
+    height: 120px;
+    background: #111;
+    color: #fff;
+    border-radius: 0 16px 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: left 0.3s cubic-bezier(.77,0,.18,1);
+    font-size: 2rem;
+    border: none;
+    padding: 0;
+  }
+  #chatbot-tab .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    margin-left: 0;
+  }
+  #chatbot-tab .arrow svg {
+    width: 32px;
+    height: 32px;
+    display: block;
+  }
+  #chatbot-offcanvas {
+    position: fixed;
+    top: 0;
+    left: -370px;
+    width: 350px;
+    height: 100vh;
+    background: #111;
+    box-shadow: 2px 0 16px rgba(0,0,0,0.18);
+    z-index: 1060;
+    transition: left 0.3s cubic-bezier(.77,0,.18,1);
+    display: flex;
+    flex-direction: column;
+  }
+  #chatbot-offcanvas.open {
+    left: 0;
+  }
+  #chatbot-offcanvas.open + #chatbot-tab {
+    left: 350px;
+  }
+  #chatbot-offcanvas .offcanvas-header {
+    padding: 1rem;
+    border-bottom: 1px solid #222;
+    background: #111;
+    color: #fff;
+  }
+  #chatbot-offcanvas .offcanvas-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: #181a1b;
+  }
+  #chatbot-offcanvas .chatbot-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    margin-left: auto;
+    cursor: pointer;
+  }
+  #chatbot-offcanvas input,
+  #chatbot-offcanvas textarea {
+    background: #23272b;
+    color: #fff;
+    border: 1px solid #444;
+  }
+  #chatbot-offcanvas input:focus,
+  #chatbot-offcanvas textarea:focus {
+    border-color: #00bfff;
+    box-shadow: 0 0 0 0.2rem rgba(0,191,255,0.15);
+  }
+</style>
+
+<!-- Chatbot offcanvas panel -->
+<div id="chatbot-offcanvas">
+  <div class="offcanvas-header d-flex align-items-center">
+    <span class="offcanvas-title">Chat Support</span>
+    <button class="chatbot-close ms-auto" aria-label="Close">&times;</button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <form id="chatbot-form" class="d-flex flex-column gap-2" style="height: 100%;">
+      <div id="chatbot-messages" class="flex-grow-1 mb-2" style="overflow-y: auto; background: #181a1b; border-radius: 8px; padding: 8px; color: #fff;">
+        <!-- Chat messages will appear here -->
+      </div>
+      <input type="text" id="chatbot-input" class="form-control" placeholder="Type your message..." autocomplete="off">
+      <button type="submit" class="btn btn-primary mt-1">Send</button>
+    </form>
+  </div>
+</div>
+
+<!-- Arrow tab to open/close chatbot -->
+<div id="chatbot-tab" title="Open Chat">
+  <span class="arrow" id="chatbot-arrow">
+    <!-- SVG arrow, direction will be set by JS -->
+    <svg id="arrow-svg" viewBox="0 0 32 32" fill="none">
+      <polygon points="24,16 12,8 12,24" fill="white"/>
+    </svg>
+  </span>
+</div>
+
+<script>
+  // Toggle chatbot panel
+  const chatbotTab = document.getElementById('chatbot-tab');
+  const chatbotPanel = document.getElementById('chatbot-offcanvas');
+  const chatbotClose = chatbotPanel.querySelector('.chatbot-close');
+  const arrowSvg = document.getElementById('arrow-svg');
+
+  function updateTabPosition() {
+    if (chatbotPanel.classList.contains('open')) {
+      chatbotTab.style.left = '350px';
+      chatbotTab.title = "Close Chat";
+      // Point arrow left (close)
+      arrowSvg.innerHTML = '<polygon points="8,16 20,8 20,24" fill="white"/>';
+    } else {
+      chatbotTab.style.left = '0';
+      chatbotTab.title = "Open Chat";
+      // Point arrow right (open)
+      arrowSvg.innerHTML = '<polygon points="24,16 12,8 12,24" fill="white"/>';
+    }
+  }
+
+  chatbotTab.addEventListener('click', () => {
+    chatbotPanel.classList.toggle('open');
+    updateTabPosition();
+  });
+  chatbotClose.addEventListener('click', () => {
+    chatbotPanel.classList.remove('open');
+    updateTabPosition();
+  });
+
+  // Optional: close on ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") {
+      chatbotPanel.classList.remove('open');
+      updateTabPosition();
+    }
+  });
+
+  // Ensure correct tab position on load
+  updateTabPosition();
+
+  // Chatbot AJAX logic
+  const chatbotForm = document.getElementById('chatbot-form');
+  const chatbotInput = document.getElementById('chatbot-input');
+  const chatbotMessages = document.getElementById('chatbot-messages');
+
+  chatbotForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const msg = chatbotInput.value.trim();
+    if (!msg) return;
+    chatbotMessages.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
+    chatbotInput.value = "";
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+    fetch("/chatbot_gemini/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({message: msg})
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.reply) {
+        chatbotMessages.innerHTML += `<div><strong>Bot:</strong> ${data.reply}</div>`;
+      } else {
+        chatbotMessages.innerHTML += `<div style='color:red;'>Error: ${data.error}</div>`;
+      }
+      // Inject the full JSON response for debugging (optional)
+      // chatbotMessages.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    })
+    .catch(err => {
+      chatbotMessages.innerHTML += `<div style='color:red;'>Error: ${err}</div>`;
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    });
+  });
+</script>

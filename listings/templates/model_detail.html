@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block hero_content %}
+<div class="container py-5">
+  <!-- Messages Section -->
+  {% if messages %}
+    <div class="mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <!-- Model Card -->
+  <div class="card mb-5 shadow">
+    <div class="row no-gutters" style="min-height: 300px;">
+      <!-- Details Column -->
+      <div class="col-md-8">
+        <div class="card-body">
+          <h2 class="card-title section-header-animated">
+            {{ model.title }}
+          </h2>
+          {% if model.is_private %}
+            <span class="badge bg-danger ms-2" style="font-size:1.1rem; padding:0.6em 1.2em; border-radius:1.5em;">Private</span>
+          {% else %}
+            <span class="badge bg-success ms-2" style="font-size:1.1rem; padding:0.6em 1.2em; border-radius:1.5em;">Public</span>
+          {% endif %}
+          <p class="card-text">{{ model.description }}</p>
+          <p class="card-text">
+            <small>Created on {{ model.created_at|date:"M d, Y" }}</small>
+          </p>
+          <!-- Creator Info -->
+          <div class="d-flex align-items-center mt-3">
+            {% if model.creator.image %}
+              <img src="{{ model.creator.image.url }}" alt="{{ model.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% else %}
+              <img src="{% static 'images/default_profile.jpg' %}" alt="{{ model.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% endif %}
+            <div>
+              <span class="h6 mb-0">{{ model.creator.username }}</span>
+              {% if model.creator.email %}
+                <br><small>{{ model.creator.email }}</small>
+              {% endif %}
+              <br>
+              <span class="badge {% if model.creator.role|lower == 'librarian' %}bg-success{% elif model.creator.role|lower == 'patron' %}bg-danger{% else %}bg-secondary{% endif %}">
+                {{ model.creator.role|title }}
+              </span>
+            </div>
+          </div>
+          <!-- Views & Likes Block -->
+          <div class="mt-3">
+            <small class="d-block">
+              <span id="model-like-count-{{ model.pk }}">{{ model.like_count }}</span> likes&nbsp;
+              <a href="{% url 'like_model' model.pk %}" class="like-btn-model" data-model-id="{{ model.pk }}" style="display:inline;" onmousedown="this.blur();" tabindex="-1">
+                {% if user in model.liked_by.all %}
+                  <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20">
+                {% else %}
+                  <img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="20" height="20">
+                {% endif %}
+              </a>&nbsp;|&nbsp;
+              <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+              {{ model.views }} views
+            </small>
+          </div>
+          <!-- Action Buttons for Creator -->
+          {% if user.is_authenticated and user == model.creator or user.role|lower == "librarian"  %}
+          <div class="mt-4">
+            <div class="d-flex flex-wrap gap-2">
+              <a href="{% url 'model_edit' model.pk %}" class="btn btn-warning">Edit Model</a>
+              <a href="{% url 'model_delete' model.pk %}" class="btn btn-danger">Delete Model</a>
+              <a href="{% url 'model_lora_search' model.pk %}" class="btn btn-success">Add LoRA from Search</a>
+              {% if user.role|lower == "librarian" %}
+                <a href="{% url 'model_create_lora' model.pk %}" class="btn btn-primary">Create LoRA for Model</a>
+              {% endif %}
+            </div>
+            {% if model.is_private %}
+              <div class="mt-3">
+                <a href="{% url 'select_allowed_users' model.pk %}" class="btn btn-info">Select Allowed Users</a>
+              </div>
+              <!-- Display Currently Selected Users -->
+              {% if model.allowed_users.all %}
+                <div class="mt-4">
+                  <strong>Currently Selected Users:</strong>
+                  <ul>
+                    {% for user in model.allowed_users.all %}
+                      <li>{{ user.username }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endif %}
+        </div>
+      </div>
+      <!-- Image Column on the Right -->
+      {% if model.image %}
+      <div class="col-md-4" style="overflow: hidden;">
+        <img src="{{ model.image.url }}" alt="{{ model.title }}" class="img-fluid" style="height: 100%; width: 100%; object-fit: cover; object-position: center;">
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Search LoRAs" value="{{ request.GET.q }}">
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+  </form>
+  <!-- LoRAs in the Model -->
+  <div class="mb-5">
+    <h3>LoRAs in this Model</h3>
+    {% if loras %}
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for lora in loras %}
+          <div class="col">
+            <div class="card h-100 d-flex flex-column">
+              {% if lora.images.all %}
+                {% if lora.images.all|length > 1 %}
+                  <!-- Carousel if multiple images -->
+                  <div id="carousel-lora-{{ lora.pk }}" class="carousel slide" data-bs-ride="carousel" style="height:250px; overflow:hidden; border-radius:8px;">
+                    <div class="carousel-inner" style="height:250px;">
+                      {% for image in lora.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height:250px;">
+                          <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ lora.title }}" style="height:250px; object-fit:cover; border-radius:8px;">
+                        </div>
+                      {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-lora-{{ lora.pk }}" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-lora-{{ lora.pk }}" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  </div>
+                {% else %}
+                  <img src="{{ lora.images.first.image.url }}" class="card-img-top" alt="{{ lora.title }}" style="object-fit:cover; max-height:250px;">
+                {% endif %}
+              {% else %}
+                <img src="https://cs3240loraapp.s3.amazonaws.com/items/default_item_image.png" class="card-img-top" alt="No Image">
+              {% endif %}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ lora.title }}</h5>
+                <p class="card-text">{{ lora.description|truncatewords:15 }}</p>
+                <!-- Spacer to push footer content to bottom -->
+                <div class="mt-auto">
+                  <!-- Top Row: Views, Likes and Average Rating -->
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small>
+                      <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+                      {{ lora.views }} views&nbsp;&nbsp;
+                      <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20" class="me-1">
+                      {{ lora.liked_by.count }} likes
+                    </small>
+                  </div>
+                  <div class="d-flex align-items-center mt-2">
+                    <span class="me-2">Avg: {{ lora.rating|floatformat:"1" }}</span>
+                    <div class="rating-display d-inline">
+                      {% with avg=lora.rating|floatformat:"0"|default:"0" %}
+                        {% for i in "12345" %}
+                          {% if forloop.counter <= avg|add:"0" %}
+                            <img src="{% static 'listing_images/default-star-full.png' %}" alt="Star" width="16" height="16">
+                          {% else %}
+                            <img src="{% static 'listing_images/default-star-empty.png' %}" alt="Star" width="16" height="16">
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
+                    </div>
+                  </div>
+                  <!-- Bottom Row: Action Buttons -->
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <a href="{% url 'listing_detail' lora.pk %}" class="btn btn-primary">View LoRA</a>
+                    {% if user.is_authenticated and user == model.creator or user.role|lower == "librarian" %}
+                    <a href="{% url 'model_remove_lora' model.pk lora.pk %}" class="btn btn-danger">Remove</a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+    {% if request.GET.q and request.GET.q != '' %}
+      <div class="alert alert-info">No LoRAs match your search.</div>
+    {% else %}
+      <div class="alert alert-info">No LoRAs have been added to this model.</div>
+    {% endif %}
+  {% endif %}
+</div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="container mb-5">
+    <div class="card p-4">
+      <div class="card-body">
+        <h3 class="mb-4">Comments</h3>
+        {% if comments %}
+          {% for comment in comments %}
+            <div class="comment-container p-3 mb-3 bg-white shadow-sm border rounded">
+              <div class="d-flex">
+                {% if comment.user.image %}
+                  <img src="{{ comment.user.image.url }}" alt="{{ comment.user.username }}" class="rounded-circle me-3" width="50" height="50">
+                {% else %}
+                  <img src="{% static 'images/default_profile.jpg' %}" alt="{{ comment.user.username }}" class="rounded-circle me-3" width="50" height="50">
+                {% endif %}
+                <div>
+                  <h6 class="mb-1">
+                    {{ comment.user.username }}
+                    {% if comment.user == model.creator %}
+                      <span class="badge bg-info ms-2">Model Owner</span>
+                    {% endif %}
+                    <small class="ms-2">{{ comment.created_at|date:"M d, Y h:i A" }}</small>
+                  </h6>
+                  <p class="mb-2">{{ comment.comment }}</p>
+                  <div class="d-flex align-items-center">
+                    <small>
+                      <span id="comment-like-count-{{ comment.pk }}">{{ comment.like_count }}</span> likes
+                    </small>
+                    <a href="{% url 'like_comment' comment.pk %}" 
+                       class="like-btn-comment ms-3" 
+                       data-comment-id="{{ comment.pk }}" 
+                       onmousedown="this.blur();" 
+                       tabindex="-1">
+                      {% if user in comment.liked_by.all %}
+                        <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="16" height="16">
+                      {% else %}
+                        <img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="16" height="16">
+                      {% endif %}
+                    </a>
+                    {% if user.is_authenticated and comment.user == user or user.role|lower == "librarian" %}
+                      <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-sm btn-outline-danger ms-3">Delete</a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info">No comments have been added yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Comment Form -->
+  <div class="container mb-5">
+    <div class="card p-4">
+      <div class="card-body">
+        <h4 class="card-title">Add a Comment</h4>
+        {% if user.is_authenticated %}
+          <form method="post">
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+            <div class="text-right mt-3">
+              <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </div>
+          </form>
+        {% else %}
+          <p>Please <a href="{% url 'account_login' %}">login</a> to add a comment.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+<!-- AJAX Script for Model Like -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const likeBtn = document.querySelector('.like-btn-model');
+    if (likeBtn) {
+      likeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.href;
+        const modelId = this.getAttribute('data-model-id');
+        const btn = this;
+        
+        fetch(url, { credentials: 'include' })
+          .then(response => {
+            if (!response.ok) throw new Error('Network error: ' + response.status);
+            return response.json();
+          })
+          .then(data => {
+            const likeCountEl = document.getElementById('model-like-count-' + modelId);
+            likeCountEl.textContent = data.like_count;
+            if (data.liked) {
+              btn.innerHTML = '<img src="{% static "listing_images/like_icon.png" %}" alt="Liked Icon" width="20" height="20">';
+            } else {
+              btn.innerHTML = '<img src="{% static "listing_images/no_like_icon.png" %}" alt="No Like Icon" width="20" height="20">';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    }
+  });
+</script>
+
+<!-- Place this before the closing </body> tag -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const likeButtons = document.querySelectorAll('.like-btn-comment');
+  
+  likeButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault(); // Prevent the default link behavior
+      
+      const url = this.getAttribute('href');
+      const commentId = this.dataset.commentId;
+      
+      fetch(url, {
+        method: 'GET',  // Change to POST if your view expects POST
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Update the like count element (ensure its id follows the expected pattern)
+        const likeCountEl = document.getElementById(`comment-like-count-${commentId}`);
+        if (likeCountEl) {
+          likeCountEl.textContent = data.like_count;
+        }
+        // Update button style based on whether it's liked:
+        if (data.liked) {
+          button.innerHTML = `<img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="16" height="16">`;
+        } else {
+          button.innerHTML = `<img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="16" height="16">`;
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  });
+});
+</script>
+{% endblock %}

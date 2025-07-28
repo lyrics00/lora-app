@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block hero_content %}
+<div class="container my-5">
+  <h2 class="mb-4 text-white section-header-animated">Your Notifications</h2>
+  <div class="card">
+    <div class="card-body">
+      {% if notifications %}
+        <ul class="list-group list-group-flush">
+          {% for note in notifications %}
+            <li class="list-group-item {% if not note.unread %}bg-light{% endif %}">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong>{{ note.actor.username }}</strong> {{ note.verb }}
+                  {% if note.target %}
+                    <em>{{ note.target.title|default:"item" }}</em>
+                  {% endif %}
+                  <p class="mb-1 text-muted">{{ note.description }}</p>
+                </div>
+                <small class="text-muted">{{ note.timestamp|date:"M d, Y H:i" }}</small>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mb-0">You have no notifications.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block hero_content %}
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to delete the LoRA "<strong>{{ lora.title }}</strong>"?</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, delete</button>
+        <a href="{% url 'my_listings' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "layouts/base.html" %}
+{% load i18n static %}
+
+{% block head_title %}{% trans "Account Settings" %}{% endblock head_title %}
+
+{% block hero_content %}
+<div class="d-flex justify-content-center my-5">
+  <div class="col-lg-6 col-md-8">
+    <div class="card mt-4">
+      <div class="card-body p-5">
+        <h1 class="mb-3 text-center text-white">{% trans "Account Settings" %}</h1>
+        <p class="lead text-center text-light">{% trans "Manage and update your account settings" %}</p>
+        {% if messages %}
+          <div class="alert alert-info mt-3" role="alert">
+            <h4 class="alert-heading">{% trans "Message:" %}</h4>
+            <ul class="list-inline mb-0">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+        <div class="d-grid gap-3 mt-4">
+          {% if user.is_authenticated %}
+            {% url 'account_email' as email_url %}
+            {% if email_url %}
+              <a href="{{ email_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Change Email" %}</a>
+            {% endif %}
+            {% url 'account_change_password' as change_password_url %}
+            {% url 'account_set_password' as set_password_url %}
+            {% if user.has_usable_password %}
+              <a href="{{ change_password_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Change Password" %}</a>
+            {% else %}
+              <a href="{{ set_password_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Set Password" %}</a>
+            {% endif %}
+            {% url 'socialaccount_connections' as connections_url %}
+            {% if connections_url %}
+              <a href="{{ connections_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Account Connections" %}</a>
+            {% endif %}
+            {% url 'mfa_index' as mfa_url %}
+            {% if mfa_url %}
+              <a href="{{ mfa_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Two-Factor Authentication" %}</a>
+            {% endif %}
+            {% url 'usersessions_list' as sessions_url %}
+            {% if sessions_url %}
+              <a href="{{ sessions_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Sessions" %}</a>
+            {% endif %}
+            {% url 'account_logout' as logout_url %}
+            {% if logout_url %}
+              <a href="{{ logout_url }}" class="btn btn-danger btn-lg w-100">{% trans "Sign Out" %}</a>
+            {% endif %}
+          {% else %}
+            {% url 'account_login' as login_url %}
+            {% if login_url %}
+              <a href="{{ login_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Sign In" %}</a>
+            {% endif %}
+            {% url 'account_signup' as signup_url %}
+            {% if signup_url %}
+              <a href="{{ signup_url }}" class="btn btn-outline-info btn-lg w-100">{% trans "Sign Up" %}</a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock hero_content %}

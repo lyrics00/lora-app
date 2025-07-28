@@ -1,0 +1,47 @@
+<!-- templates/partials/chatbot.html -->
+<div id="chatbot-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+    <button id="toggle-chatbot" class="btn btn-info rounded-circle shadow-sm">💬</button>
+    <div id="chatbot-box"
+         style="display: none; width: 300px; height: 400px; background: #1e1e1e;
+                border-radius: 10px; padding: 10px; overflow-y: auto; color: white;">
+      <div id="chat-log" style="height: 300px; overflow-y: auto; margin-bottom: 10px;"></div>
+      <input id="chat-input" class="form-control" placeholder="Ask me something..." />
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleBtn = document.getElementById("toggle-chatbot");
+      const chatBox = document.getElementById("chatbot-box");
+      const chatInput = document.getElementById("chat-input");
+      const chatLog = document.getElementById("chat-log");
+  
+      toggleBtn.onclick = () => {
+        chatBox.style.display = chatBox.style.display === "none" ? "block" : "none";
+      };
+  
+      chatInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter" && chatInput.value.trim()) {
+          const msg = chatInput.value;
+          chatLog.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
+          chatInput.value = "";
+  
+          fetch("{% url 'chatbot_response' %}", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({message: msg})
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.reply) {
+              chatLog.innerHTML += `<div><strong>Bot:</strong> ${data.reply}</div>`;
+              chatLog.scrollTop = chatLog.scrollHeight;
+            } else {
+              chatLog.innerHTML += `<div style='color:red;'>Error: ${data.error}</div>`;
+            }
+          });
+        }
+      });
+    });
+  </script>
+  

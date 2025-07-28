@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}LoRA Market{% endblock %}
+
+{% block hero_content %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+
+  <!-- Updated Hero Section with better information -->
+  <div class="p-5 mb-4 rounded-3">
+    <div class="container-fluid py-5 text-center">
+      <h1 class="display-5 fw-bold page-title-animated">Welcome to the LoRA CLA!</h1>
+      <img src="{% static 'images/lora-logo.png' %}" alt="LoRA Market Logo" class="mb-4 d-block mx-auto" style="max-width: 220px; width: 100%; height: auto;">
+      <p class="col-md-8 fs-4 mx-auto">
+        Discover exceptional LoRA listings designed to elevate your digital projects.
+        Browse trending designs, connect with creative enthusiasts, and explore resources that fuel innovation.
+        Whether you're seeking inspiration or practical solutions, our marketplace is here to empower your journey.
+      </p>
+      <a class="btn btn-primary btn-lg" href="{% url 'help_page' %}" role="button">Learn More</a>
+    </div>
+  </div>
+{% endblock %}
