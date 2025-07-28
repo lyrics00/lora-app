@@ -1,0 +1,13 @@
+/* styles.css */
+.container {
+    margin-top: 50px;
+  }
+  
+  .form-label {
+    font-weight: bold;
+  }
+  
+  .btn-primary {
+    background-color: #0069d9;
+    border-color: #0062cc;
+  }

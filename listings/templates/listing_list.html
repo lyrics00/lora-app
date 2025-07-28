@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col text-center text-white">
+      <h2>Listings</h2>
+    </div>
+  </div>
+  
+  <!-- Centered Create Listing Button for Librarians -->
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      {% if user.is_authenticated and user.role == "librarian" %}
+        <a href="{% url 'listing_create' %}" class="btn btn-success">Create Listing</a>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Listings Grid -->
+  <div class="row">
+    {% for listing in listings %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if listing.image %}
+            <img src="{{ listing.image.url }}" class="card-img-top" alt="{{ listing.title }}">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ listing.title }}</h5>
+            <p class="card-text">{{ listing.description|truncatewords:20 }}</p>
+            <!-- Listing Info Footer -->
+            <div class="mt-auto">
+              <div class="d-flex align-items-center mb-3">
+                {% if listing.librarian.image %}
+                  <img src="{{ listing.librarian.image.url }}" alt="{{ listing.librarian.username }}" class="rounded-circle me-2" width="40" height="40">
+                {% else %}
+                  <img src="{% static 'images/default_profile.jpg' %}" alt="{{ listing.librarian.username }}" class="rounded-circle me-2" width="40" height="40">
+                {% endif %}
+                <div>
+                  <h6 class="mb-0">{{ listing.librarian.username }}</h6>
+                  <small class="text-muted">{{ listing.created_at|date:"M d, Y h:i A" }}</small>
+                </div>
+              </div>
+              <a href="{% url 'listing_detail' listing.pk %}" class="btn btn-primary">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col text-white">
+        <p>No listings available at the moment.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

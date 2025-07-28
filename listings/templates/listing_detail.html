@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block hero_content %}
+<div class="container py-5">
+  <!-- Listing Card -->
+  <div class="card mb-5 shadow">
+    <div class="row no-gutters">
+      {% if listing.image %}
+      <div class="col-md-4">
+        <img src="{{ listing.image.url }}" class="card-img" alt="{{ listing.title }}">
+      </div>
+      {% endif %}
+      <div class="col-md-8">
+        <div class="card-body">
+          <h2 class="card-title">{{ listing.title }}</h2>
+          <p class="card-text">{{ listing.description }}</p>
+          <p class="card-text text-muted">
+            <small>Posted on {{ listing.created_at|date:"M d, Y" }}</small>
+          </p>
+          <!-- Inline Listing Owner Information -->
+          <div class="d-flex align-items-center mt-3">
+            {% if listing.librarian.image %}
+              <img src="{{ listing.librarian.image.url }}" alt="{{ listing.librarian.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% else %}
+              <img src="{% static 'images/default_profile.jpg' %}" alt="{{ listing.librarian.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% endif %}
+            <div>
+              <span class="h6 text-dark mb-0">{{ listing.librarian.username }}</span>
+              {% if listing.librarian.email %}
+                <br><small class="text-dark">{{ listing.librarian.email }}</small>
+              {% endif %}
+            </div>
+          </div>
+        </div> 
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments Section Container -->
+  <div class="container mb-5 p-4 bg-light rounded">
+    <h3>Comments</h3>
+    {% if comments %}
+      {% for comment in comments %}
+      <div class="media mb-4 p-3 bg-white rounded shadow-sm">
+        {% if comment.user.image %}
+          <img src="{{ comment.user.image.url }}" class="mr-3 rounded-circle" alt="{{ comment.user.username }}" width="50" height="50">
+        {% else %}
+          <img src="{% static 'images/default_profile.jpg' %}" class="mr-3 rounded-circle" alt="{{ comment.user.username }}" width="50" height="50">
+        {% endif %}
+        <div class="media-body">
+          <h6 class="mt-0">
+            {{ comment.user.username }}
+            {% if comment.user.id == listing.librarian.id %}
+              <span class="badge bg-info text-dark ms-2">Listing Owner</span>
+            {% endif %}
+            <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y h:i A" }}</small>
+          </h6>
+          <p>{{ comment.comment }}</p>
+          {% if user.is_authenticated and comment.user == user %}
+             <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-info">
+        No comments have been added yet.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Comment Form Container -->
+  <div class="container mb-5">
+    <div class="card p-4">
+      <h4>Add a Comment</h4>
+      {% if user.is_authenticated %}
+        <form method="post">
+          {% csrf_token %}
+          {{ comment_form|crispy }}
+          <div class="text-right mt-3">
+            <button type="submit" class="btn btn-primary">Submit Comment</button>
+          </div>
+        </form>
+      {% else %}
+        <p>Please <a href="{% url 'account_login' %}">login</a> to add a comment.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

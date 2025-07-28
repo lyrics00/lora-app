@@ -1,0 +1,11 @@
+{% load i18n %}
+{% if messages %}
+  <div class="alert alert-info mt-3" role="alert">
+    <h4 class="alert-heading">{% trans "Message:" %}</h4>
+    <ul class="list-inline mb-0">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

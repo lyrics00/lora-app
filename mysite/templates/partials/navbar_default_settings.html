@@ -1,0 +1,116 @@
+{% load i18n static %}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">My Site</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        {% if user.is_authenticated %}
+          <!-- Account Information Dropdown Toggle (clickable text) -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle fw-bold" href="#" id="accountInfoDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              {% trans "Account Information" %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountInfoDropdown">
+              <li class="dropdown-header">{% trans "Account Information" %}</li>
+              {% url 'account_email' as email_url %}
+              {% if email_url %}
+                <li>
+                  <a class="dropdown-item {% if request.resolver_match.url_name == 'account_email' %}active{% endif %}" 
+                     href="{{ email_url }}">
+                    {% trans "Change Email" %}
+                  </a>
+                </li>
+              {% endif %}
+              {% url 'account_change_password' as change_password_url %}
+              {% if change_password_url %}
+                <li>
+                  <a class="dropdown-item {% if request.resolver_match.url_name == 'account_change_password' %}active{% endif %}" 
+                     href="{{ change_password_url }}">
+                    {% trans "Change Password" %}
+                  </a>
+                </li>
+              {% endif %}
+              {% url 'socialaccount_connections' as connections_url %}
+              {% if connections_url %}
+                <li>
+                  <a class="dropdown-item {% if request.resolver_match.url_name == 'socialaccount_connections' %}active{% endif %}" 
+                     href="{{ connections_url }}">
+                    {% trans "Account Connections" %}
+                  </a>
+                </li>
+              {% endif %}
+              {% url 'mfa_index' as mfa_url %}
+              {% if mfa_url %}
+                <li>
+                  <a class="dropdown-item {% if request.resolver_match.url_name == 'mfa_index' %}active{% endif %}" 
+                     href="{{ mfa_url }}">
+                    {% trans "Two-Factor Authentication" %}
+                  </a>
+                </li>
+              {% endif %}
+              {% url 'usersessions_list' as sessions_url %}
+              {% if sessions_url %}
+                <li>
+                  <a class="dropdown-item {% if request.resolver_match.url_name == 'usersessions_list' %}active{% endif %}" 
+                     href="{{ sessions_url }}">
+                    {% trans "Sessions" %}
+                  </a>
+                </li>
+              {% endif %}
+              <li><hr class="dropdown-divider"></li>
+              {% url 'account_profile_edit' as profile_edit_url %}
+              {% if profile_edit_url %}
+                <li>
+                  <a class="dropdown-item {% if request.resolver_match.url_name == 'account_profile_edit' %}active{% endif %}" 
+                     href="{{ profile_edit_url }}">
+                    {% trans "Edit Profile Information" %}
+                  </a>
+                </li>
+              {% endif %}
+              {% url 'account_logout' as logout_url %}
+              {% if logout_url %}
+                <li>
+                  <a class="dropdown-item {% if request.resolver_match.url_name == 'account_logout' %}active{% endif %}" 
+                     href="{{ logout_url }}">
+                    {% trans "Sign Out" %}
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </li>
+          <!-- Username and Profile Picture linking to settings -->
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'account_settings' %}active{% endif %}" 
+               href="{% url 'account_settings' %}">
+              {% if user.image %}
+                <img src="{{ user.image.url }}" alt="Profile Picture" class="rounded-circle" width="30" height="30">
+              {% else %}
+                <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture" class="rounded-circle" width="30" height="30">
+              {% endif %}
+              {{ user.role|capfirst }} - {{ user.username }}
+            </a>
+          </li>
+        {% else %}
+          {% url 'account_login' as login_url %}
+          {% if login_url %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ login_url }}">{% trans "Log In" %}</a>
+            </li>
+          {% endif %}
+          {% url 'account_signup' as signup_url %}
+          {% if signup_url %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ signup_url }}">{% trans "Sign Up" %}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

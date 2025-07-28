@@ -1,0 +1,15 @@
+Django==5.1.2
+django-bootstrap5==25.1.0
+gunicorn==23.0.0
+whitenoise==6.9.0
+django-allauth==65.4.1
+django-environ==0.12.0
+django-allauth[socialaccount]
+requests==2.31.0
+django-crispy-forms==2.3
+crispy_bootstrap5==2024.10
+django-widget-tweaks==1.4.11
+setuptools>=70.0.0
+boto3
+django-storages
+Pillow
