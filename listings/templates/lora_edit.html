@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block hero_content %}
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h2 class="mb-0 text-white">Edit LoRA: {{ lora.title }}</h2>
+    </div>
+    <div class="card-body">
+      <!-- Main Edit Form: Only for updating LoRA details -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.title.label_tag }}
+          {{ form.title|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+          {{ form.description.label_tag }}
+          {{ form.description|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+          {{ form.location.label_tag }}
+          {{ form.location|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+          <label for="id_images" class="form-label">Upload New Images</label>
+          <input type="file" name="images" id="id_images" accept="image/*" multiple class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+      
+      <!-- Existing Images Section: Separate from the main form -->
+      {% if lora.images.all %}
+        <h3 class="mt-4">Existing Images</h3>
+        <div class="row row-cols-2 row-cols-md-4 g-3 mb-3">
+          {% for image in lora.images.all %}
+            {% if "default_item_image.png" not in image.image.url %}
+              <div class="col">
+                <div class="edit-image-container">
+                  <img src="{{ image.image.url }}" alt="Image for {{ lora.title }}">
+                </div>
+                <!-- Delete Form for this Image -->
+                <div class="delete-button-container text-center mt-2">
+                  <form action="{% url 'delete_lora_image' image.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Inline CSS for improved image display -->
+<style>
+  /* Container for the image */
+  .edit-image-container {
+    overflow: hidden;
+    border-radius: 8px;
+    height: 150px;
+  }
+  .edit-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 8px;
+  }
+  /* Container for the delete button */
+  .delete-button-container {
+    text-align: center;
+  }
+</style>
+{% endblock %}

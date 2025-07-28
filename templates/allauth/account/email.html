@@ -1,0 +1,187 @@
+{% extends "layouts/base.html" %}
+{% load i18n allauth django_bootstrap5 widget_tweaks %}
+
+{% block hero_content %}
+  <style>
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(6px);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(255, 30, 86, 0.25);
+      color: #e0e0e0;
+    }
+
+    .card-header {
+      background-color: rgba(255, 30, 86, 0.15);
+      border-bottom: 1px solid rgba(255, 30, 86, 0.3);
+    }
+
+    .card-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      margin: 0;
+      text-shadow: 0 0 8px #ff1e56;
+    }
+
+    .badge.bg-success {
+      background-color: #00ff88 !important;
+      color: #000;
+    }
+
+    .badge.bg-warning {
+      background-color: #ffc107 !important;
+    }
+
+    .badge.bg-info {
+      background-color: #17a2b8 !important;
+    }
+
+    .form-check-label {
+      font-weight: 500;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+      border-radius: 30px;
+      font-weight: bold;
+      padding: 0.4rem 1.2rem;
+      transition: 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: transparent;
+      border: 2px solid #ff1e56;
+      color: #ff1e56;
+    }
+
+    .btn-primary:hover {
+      background-color: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 10px rgba(255, 30, 86, 0.6);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 2px solid #aaa;
+      color: #ddd;
+    }
+
+    .btn-secondary:hover {
+      background-color: #999;
+      color: #000;
+    }
+
+    .btn-danger {
+      background-color: rgba(255, 0, 60, 0.1);
+      border: 2px solid #ff003c;
+      color: #ff003c;
+    }
+
+    .btn-danger:hover {
+      background-color: #ff003c;
+      color: #000;
+      box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+    }
+
+    .list-group-item {
+      background-color: rgba(255, 255, 255, 0.025);
+      border: none;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid rgba(255, 30, 86, 0.2);
+    }
+
+    .form-control:focus {
+      border-color: #ff1e56;
+      box-shadow: 0 0 6px rgba(255, 30, 86, 0.4);
+    }
+
+    .invalid-feedback {
+      color: #ff8080;
+    }
+  </style>
+
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h3 class="mb-0">{% trans "Email Addresses" %}</h3>
+    </div>
+    <div class="card-body">
+      {% if emailaddresses %}
+        <p class="mb-3">
+          {% trans "The following email addresses are associated with your account:" %}
+        </p>
+        {% url 'account_email' as email_url %}
+        <form action="{{ email_url }}" method="post">
+          {% csrf_token %}
+          <div class="list-group mb-3">
+            {% for radio in emailaddress_radios %}
+              {% with emailaddress=radio.emailaddress %}
+              <div class="list-group-item">
+                <div class="form-check">
+                  <input type="radio"
+                         name="email"
+                         id="{{ radio.id }}"
+                         value="{{ emailaddress.email }}"
+                         class="form-check-input"
+                         {% if radio.checked %}checked{% endif %} />
+                  <label class="form-check-label" for="{{ radio.id }}">
+                    {{ emailaddress.email }}
+                    {% if emailaddress.verified %}
+                      <span class="badge bg-success">{% trans "Verified" %}</span>
+                    {% else %}
+                      <span class="badge bg-warning text-dark">{% trans "Unverified" %}</span>
+                    {% endif %}
+                    {% if emailaddress.primary %}
+                      <span class="badge bg-info text-dark">{% trans "Primary" %}</span>
+                    {% endif %}
+                  </label>
+                </div>
+              </div>
+              {% endwith %}
+            {% endfor %}
+          </div>
+          <div class="mb-3">
+            <button type="submit" name="action_primary" class="btn btn-primary me-2">
+              {% trans "Make Primary" %}
+            </button>
+            <button type="submit" name="action_send" class="btn btn-secondary me-2">
+              {% trans "Re-send Verification" %}
+            </button>
+            <button type="submit" name="action_remove" class="btn btn-danger">
+              {% trans "Remove" %}
+            </button>
+          </div>
+        </form>
+      {% else %}
+        {% include "account/snippets/warn_no_email.html" %}
+      {% endif %}
+
+      {% if can_add_email %}
+        <hr />
+        <h4 class="mb-3">{% trans "Add Email Address" %}</h4>
+        {% url 'account_email' as action_url %}
+        <form action="{{ action_url }}" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.email|add_class:"form-control" }}
+            {% if form.email.errors %}
+              {% for error in form.email.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <button type="submit" name="action_add" class="btn btn-primary">
+            {% trans "Add Email" %}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+{% endblock hero_content %}

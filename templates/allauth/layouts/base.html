@@ -1,0 +1,176 @@
+{% load i18n django_bootstrap5 static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block head_title %}My Site{% endblock head_title %}</title>
+
+    {% bootstrap_css %}
+
+    <!-- Futuristic Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
+
+    <style>
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        font-family: 'Montserrat', sans-serif;
+        background-color: #0d0d0d;
+        color: #ffe6e6;
+      }
+
+      nav.navbar {
+        background: linear-gradient(135deg, #2a0000, #1a0000);
+        box-shadow: 0 2px 15px rgba(255, 0, 0, 0.4);
+        border-bottom: 1px solid #330000;
+      }
+
+      .special-url {
+        margin-inline: 1rem;
+      }
+
+      .fixed-top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+
+      .hero {
+        min-height: 100vh;
+        width: 100vw;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: url("{% block hero_background %}{% static 'images/settings-hero.jpg' %}{% endblock %}") no-repeat center center;
+        background-size: cover;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(8px);
+        z-index: 0;
+      }
+
+      .hero > .hero-content {
+        position: relative;
+        z-index: 1;
+        width: 90%;
+        max-width: 1200px;
+        padding: 2rem;
+        background: rgba(60, 0, 0, 0.2);
+        box-shadow: 0 0 25px rgba(255, 0, 0, 0.3);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+      }
+
+      .navbar .dropdown-menu {
+        background-color: #2a0000;
+        border: none;
+      }
+
+      .navbar .dropdown-menu .dropdown-item {
+        color: #fff;
+      }
+
+      .navbar .dropdown-menu .dropdown-item:hover,
+      .navbar .dropdown-menu .dropdown-item:focus {
+        background-color: #550000;
+        color: #fff;
+      }
+
+      .navbar .dropdown-menu .dropdown-item:focus {
+        outline: none;
+      }
+
+      nav.navbar .navbar-nav {
+        align-items: center;
+      }
+
+      nav.navbar .navbar-nav .nav-item {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+
+      .hero-content h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #ff4d4d;
+        text-shadow: 0 0 12px #ff1e56;
+      }
+
+      .hero-content p {
+        font-size: 1.1rem;
+        color: #ffcccc;
+      }
+
+      @keyframes pulse-glow-red {
+        0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+        50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+      }
+
+      .glow-button {
+        border: 2px solid #ff1e56;
+        background: transparent;
+        color: #ff1e56;
+        padding: 0.5rem 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 30px;
+        transition: 0.3s ease;
+        animation: pulse-glow-red 2s infinite;
+      }
+
+      .glow-button:hover {
+        background: #ff1e56;
+        color: #000;
+        animation: none;
+      }
+
+      .card,
+      .card-header,
+      .card-body,
+      .card p,
+      .card small,
+      .card span,
+      .card label {
+        color: #fff;
+      }
+    </style>
+
+    {% block extra_head %}{% endblock extra_head %}
+  </head>
+
+  <body>
+    {% block navbar %}
+      {% include 'partials/navbar_default_settings.html' %}
+    {% endblock %}
+
+    <section class="hero">
+      <div class="hero-content">
+        {% block hero_content %}{% endblock hero_content %}
+      </div>
+    </section>
+
+    {% block content %}{% endblock content %}
+
+    {% bootstrap_javascript %}
+    {% block extra_body %}{% endblock extra_body %}
+  </body>
+</html>

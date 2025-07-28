@@ -1,0 +1,37 @@
+{% block content %}
+  <style>
+    .redirect-container {
+      min-height: 60vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #ff1e56;
+      text-shadow: 0 0 10px #ff1e56;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .redirect-link {
+      margin-top: 1.5rem;
+      color: #ff1e56;
+      border: 2px solid #ff1e56;
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+
+    .redirect-link:hover {
+      background-color: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 12px rgba(255, 30, 86, 0.6);
+    }
+  </style>
+
+  <div class="redirect-container text-center">
+    <h2>{% translate "Redirecting..." %}</h2>
+    <p class="mt-3">{% translate "If you are not redirected automatically," %}</p>
+    <a href="{{ redirect_to }}" class="redirect-link">{% translate "Click here to continue" %}</a>
+  </div>
+{% endblock content %}
