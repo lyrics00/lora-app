@@ -1,0 +1,84 @@
+{% extends "layouts/base.html" %}
+{% load i18n static %}
+
+{% block head_title %}{% trans "Account Settings" %}{% endblock head_title %}
+
+{% block navbar_items %}{% comment %}Override to hide nav items on settings page{% endcomment %}{% endblock navbar_items %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white text-center">
+          <h3 class="mb-0">{% trans "Account Settings" %}</h3>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% if user.is_authenticated %}
+              {% url 'account_email' as email_url %}
+              {% if email_url %}
+                <li class="list-group-item">
+                  <a href="{{ email_url }}">{% trans "Change Email" %}</a>
+                </li>
+              {% endif %}
+              {% url 'account_change_password' as change_password_url %}
+              {% if change_password_url %}
+                <li class="list-group-item">
+                  <a href="{{ change_password_url }}">{% trans "Change Password" %}</a>
+                </li>
+              {% endif %}
+              {% url 'socialaccount_connections' as connections_url %}
+              {% if connections_url %}
+                <li class="list-group-item">
+                  <a href="{{ connections_url }}">{% trans "Account Connections" %}</a>
+                </li>
+              {% endif %}
+              {% url 'mfa_index' as mfa_url %}
+              {% if mfa_url %}
+                <li class="list-group-item">
+                  <a href="{{ mfa_url }}">{% trans "Two-Factor Authentication" %}</a>
+                </li>
+              {% endif %}
+              {% url 'usersessions_list' as sessions_url %}
+              {% if sessions_url %}
+                <li class="list-group-item">
+                  <a href="{{ sessions_url }}">{% trans "Sessions" %}</a>
+                </li>
+              {% endif %}
+              {% url 'account_logout' as logout_url %}
+              {% if logout_url %}
+                <li class="list-group-item">
+                  <a href="{{ logout_url }}">{% trans "Sign Out" %}</a>
+                </li>
+              {% endif %}
+              {# New: Button to switch roles #}
+              {% url 'account_switch_role' as switch_role_url %}
+              {% if switch_role_url %}
+                <li class="list-group-item">
+                  <a href="{{ switch_role_url }}" class="btn btn-outline-primary w-100">
+                    {% trans "Switch Role" %}
+                  </a>
+                </li>
+              {% endif %}
+            {% else %}
+              {% url 'account_login' as login_url %}
+              {% if login_url %}
+                <li class="list-group-item">
+                  <a href="{{ login_url }}">{% trans "Sign In" %}</a>
+                </li>
+              {% endif %}
+              {% url 'account_signup' as signup_url %}
+              {% if signup_url %}
+                <li class="list-group-item">
+                  <a href="{{ signup_url }}">{% trans "Sign Up" %}</a>
+                </li>
+              {% endif %}
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

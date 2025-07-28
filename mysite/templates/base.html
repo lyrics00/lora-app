@@ -1,0 +1,69 @@
+{% load bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}My Site{% endblock %}</title>
+    
+    {% bootstrap_css %}
+    <style>
+        /* styles.css */
+        .navbar-nav .nav-item {
+            margin: 0 20px; /* 20px space on both left and right */
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">My Site</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse align-items-center" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+              <li class="nav-item">
+                <div class="navbar-text align-items-center justify-content-around">
+                  {{ user.role|capfirst }} - {{ user.username }}
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_settings' %}">Settings</a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      {% block content %}
+      <!-- Page-specific content goes here -->
+      {% endblock %}
+    </div>
+
+    {% bootstrap_javascript %}
+    {% block scripts %}
+    <!-- Additional scripts can be added here -->
+    {% endblock %}
+  </body>
+</html>

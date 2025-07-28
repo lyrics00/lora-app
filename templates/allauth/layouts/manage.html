@@ -1,0 +1,21 @@
+{% extends "layouts/base.html" %}
+{% load i18n bootstrap5 static %}
+
+{% block head_title %}{% trans "Manage Your Account" %}{% endblock head_title %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white text-center">
+          <h3 class="mb-0">{% trans "Account Management" %}</h3>
+        </div>
+        <div class="card-body">
+          {% block manage_content %}
+          <!-- Page-specific account management content goes here -->
+          {% endblock manage_content %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

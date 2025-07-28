@@ -1,0 +1,29 @@
+{% extends "layouts/base.html" %}
+{% load i18n bootstrap5 static %}
+
+{% block head_title %}{% trans "Switch Role" %}{% endblock head_title %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white text-center">
+          <h3 class="mb-0">{% trans "Switch Role" %}</h3>
+        </div>
+        <div class="card-body">
+          <p class="text-center">{% trans "Select your desired role:" %}</p>
+          <div class="d-grid gap-2">
+            <a href="{% url 'switch_role_librarian' %}" class="btn btn-outline-primary">
+              {% trans "Switch to Librarian" %}
+            </a>
+            <a href="{% url 'switch_role_patron' %}" class="btn btn-outline-secondary">
+              {% trans "Switch to Patron" %}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

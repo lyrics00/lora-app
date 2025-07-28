@@ -1,0 +1,4 @@
+/* styles.css */
+.navbar-nav .nav-item {
+    margin: 0 20px; /* 20px space on both left and right */
+  }

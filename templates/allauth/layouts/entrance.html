@@ -1,0 +1,21 @@
+{% extends "layouts/base.html" %}
+{% load i18n bootstrap5 static %}
+
+{% block head_title %}{% trans "Welcome" %}{% endblock head_title %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+          <h3 class="mb-0">{% trans "Welcome to My Site" %}</h3>
+        </div>
+        <div class="card-body">
+          {% block entrance_content %}
+          <!-- Page-specific content (e.g., login or signup forms) goes here -->
+          {% endblock entrance_content %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
