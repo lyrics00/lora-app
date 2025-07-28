@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <h2 class="mb-4">Active Collection Access Requests</h2>
+  <hr>
+  
+  {% if active_collection_requests %}
+    <div class="row">
+      {% for req in active_collection_requests %}
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ req.patron.username }} requested access</h5>
+            <p class="card-text">
+              <em>{{ req.collection.title }}</em><br>
+              <small>Requested on {{ req.created_at|date:"M d, Y" }}</small>
+            </p>
+            <div class="d-flex justify-content-end">
+              <a href="{% url 'approve_collection_request' req.id %}" class="btn btn-sm btn-success me-2">Approve</a>
+              <a href="{% url 'deny_collection_request' req.id %}" class="btn btn-sm btn-danger">Deny</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      There are currently no active collection access requests.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

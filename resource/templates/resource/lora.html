@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block hero_content %}
+<div class="container py-5">
+
+  <!-- Hero -->
+  <div class="text-center mb-5" data-aos="fade-up">
+    <h1 class="display-5 fw-bold">🧠 LoRA Fine-Tuning Resources</h1>
+    <p class="lead text-white">Helpful guides and links to get started training your own LoRA AI models.</p>
+  </div>
+
+  <!-- Cards Row -->
+  <div class="row g-4">
+
+    <!-- External Tools & Guides -->
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h4 class="card-title mb-3">🔗 External Tools & Guides</h4>
+          <ul class="list-unstyled">
+            <li>🔗 <a href="https://github.com/bmaltais/kohya_ss" target="_blank">Kohya LoRA Trainer (GitHub)</a></li>
+            <li>🔗 <a href="https://colab.research.google.com/github/kohya-ss/sd-scripts/blob/main/train_network_GUI_colab.ipynb" target="_blank">Google Colab Notebook (Free GPU)</a></li>
+            <li>🔗 <a href="https://huggingface.co/docs/diffusers/main/en/training/lora" target="_blank">LoRA Training with Hugging Face</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- LoRA Resources -->
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h4 class="card-title mb-3">📁 LoRA Resources</h4>
+          <ul class="list-unstyled">
+            <li>🗂️ <a href="/static/resource_assets/sample-dataset.zip" download>Download Sample Dataset (.zip)</a></li>
+            <li>📝 <a href="{% url 'dataset_guide' %}">Guide: Preparing Your Dataset</a></li>
+            <li>⚙️ <a href="{% url 'tuning_guide' %}">LoRA Parameter Tuning Walkthrough</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Step-by-Step Training Guide -->
+  <div class="text-center mt-5" data-aos="zoom-in" data-aos-delay="500">
+    <h2 class="fw-bold text-white">📘 Step-by-Step Training Guide</h2>
+    <p class="lead text-white">Follow our full walkthrough to train your own LoRA model using Google Colab.</p>
+    <a href="{% url 'lora_colab_guide' %}" class="btn btn-primary">Open Guide</a>
+  </div>
+
+  <!-- Tips -->
+  <div class="mt-5" data-aos="fade-up" data-aos-delay="600">
+    <h3 class="fw-bold text-white">🛠️ Tips for Better Results</h3>
+    <ul class="text-white mt-3">
+      <li>Use high-quality, consistent training images</li>
+      <li>Clean your dataset (no duplicates, no blurry images)</li>
+      <li>Caption your images properly</li>
+      <li>Train with smaller learning rates to avoid overfitting</li>
+      <li>Test different checkpoint steps and LoRA ranks</li>
+    </ul>
+  </div>
+
+ <!-- Upload Form -->
+<div class="row mt-5" data-aos="fade-up" data-aos-delay="700">
+  <div class="col-lg-10 mx-auto">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title">📤 Upload Your LoRA Model</h3>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="modelTitle" class="form-label">Model Name</label>
+            <input type="text" class="form-control" id="modelTitle" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="file" class="form-label">Upload LoRA Model File</label>
+            <input class="form-control" type="file" id="file" name="file" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

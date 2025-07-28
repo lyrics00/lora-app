@@ -1,0 +1,72 @@
+{% extends "layouts/manage.html" %}
+{% load i18n %}
+{% load allauth %}
+
+{% block head_title %}
+    {% trans "Account Connections" %}
+{% endblock head_title %}
+
+
+
+
+
+{% block hero_content %}
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white">
+    <h3 class="mb-0">{% trans "Account Connections" %}</h3>
+  </div>
+  <div class="card-body">
+    {% if form.accounts %}
+      <p class="mb-3">
+        {% blocktrans %}
+          You can sign in to your account using any of the following third-party accounts:
+        {% endblocktrans %}
+      </p>
+      {% url 'socialaccount_connections' as action_url %}
+      <form method="post" action="{{ action_url }}">
+        {% csrf_token %}
+        <div class="list-group mb-3">
+          {% for acc in form.fields.account.choices %}
+            {% with account=acc.0.instance.get_provider_account %}
+              {% setvar radio_id %}
+                id_account_{{ account.account.pk }}
+              {% endsetvar %}
+              {% setvar tags %}
+                socialaccount,{{ account.account.provider }}
+              {% endsetvar %}
+              <div class="list-group-item">
+                <div class="form-check">
+                  <input type="radio"
+                         class="form-check-input"
+                         id="{{ radio_id }}"
+                         name="account"
+                         value="{{ account.account.pk }}">
+                  <label class="form-check-label" for="{{ radio_id }}">
+                    {{ account }}
+                    <span class="badge bg-secondary">
+                      {{ account.get_brand.name }}
+                    </span>
+                  </label>
+                </div>
+              </div>
+            {% endwith %}
+          {% endfor %}
+        </div>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-danger">
+            {% trans 'Remove' %}
+          </button>
+        </div>
+      </form>
+    {% else %}
+      <p class="mb-3">
+        {% trans 'You currently have no third-party accounts connected to this account.' %}
+      </p>
+    {% endif %}
+    <hr>
+    <h2 class="h4 mt-4">{% trans 'Add a Third-Party Account' %}</h2>
+    {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
+    {% include "socialaccount/snippets/login_extra.html" %}
+  </div>
+</div>
+{% endblock hero_content %}

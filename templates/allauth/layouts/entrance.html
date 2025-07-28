@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+{% load i18n django_bootstrap5 static %}
+
+{% block content %}
+  <style>
+    .futuristic-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.08);
+      padding: 2rem;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .futuristic-card:hover {
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+    }
+
+    .futuristic-card h1,
+    .futuristic-card h2,
+    .futuristic-card h3 {
+      color: #00ffff;
+      text-shadow: 0 0 6px #00ffff;
+    }
+
+    .futuristic-card p,
+    .futuristic-card label {
+      color: #e0e0e0;
+    }
+  </style>
+
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      <div class="futuristic-card">
+        <div class="card-body">
+          {% block page_content %}{% endblock page_content %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
