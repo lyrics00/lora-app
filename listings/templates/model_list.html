@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block hero_content %}
+<div class="container my-5">
+
+  <!-- Message Display -->
+  {% if messages %}
+    <div class="my-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <style>
+    .card {
+      background: linear-gradient(135deg, #1a1a1a, #333333) !important; /* dark gradient */
+      border: 1px solid #00ffff !important; /* neon cyan border */
+      border-radius: 8px !important;
+      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2) !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    .card:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4) !important;
+    }
+
+    .card-body {
+      background: transparent; /* preserve the dark gradient of the card */
+      padding: 1rem;
+      color: #e0e0e0; /* light text that complements the dark background */
+    }
+
+    .card-text {
+      color: #e0e0e0 !important;
+    }
+
+    .model-searchbar-card {
+      background: #23272b;
+      border-radius: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid #444;
+    }
+    .model-searchbar-card .form-control,
+    .model-searchbar-card .form-select {
+      background: #181a1b;
+      color: #fff;
+      border: 1px solid #444;
+    }
+    .model-searchbar-card .form-control:focus,
+    .model-searchbar-card .form-select:focus {
+      border-color: #00bfff;
+      box-shadow: 0 0 0 0.2rem rgba(0,191,255,0.15);
+    }
+    .model-searchbar-card .btn-outline-primary {
+      border-color: #00bfff;
+      color: #00bfff;
+    }
+    .model-searchbar-card .btn-outline-primary:hover {
+      background: #00bfff;
+      color: #fff;
+    }
+    @media (max-width: 768px) {
+      .model-searchbar-card { padding: 1rem; }
+    }
+    .model-searchbar-card input::placeholder {
+      color: #b8eaff !important; /* or any bright color you prefer */
+      opacity: 1; /* ensures the color is not faded */
+    }
+
+  </style>
+
+  <h2 class="text-white section-header-animated text-center mb-4">Models</h2>
+
+  <div class="model-searchbar-card">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-12 col-md-8">
+        <label for="search-q" class="form-label text-light">Keyword</label>
+        <input type="text" id="search-q" name="q" class="form-control" placeholder="Search Models"
+               value="{{ request.GET.q }}">
+      </div>
+      <div class="col-12 col-md-2">
+        <label for="search-sort" class="form-label text-light">Sort by</label>
+        <select id="search-sort" name="sort" class="form-select" onchange="this.form.submit()">
+          <option value="">-- Select --</option>
+          <option value="likes" {% if request.GET.sort == "likes" %}selected{% endif %}>Likes</option>
+          <option value="views" {% if request.GET.sort == "views" %}selected{% endif %}>Views</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-2 d-grid">
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Centered Create Model Button for Librarians -->
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      {% if user.is_authenticated and user.role == "librarian" %}
+        <a href="{% url 'model_create' %}" class="btn btn-success">Create Model</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Models Grid -->
+  <div class="row">
+    {% for model in models %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if model.image %}
+            <img
+              src="{{ model.image.url }}"
+              class="card-img-top"
+              alt="{{ model.title }}"
+              style="height:200px; object-fit:cover;"
+            >
+          {% endif %}
+          <!-- Inside your model card template -->
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">
+              {{ model.title }}
+              {% if model.is_private %}
+                <span class="badge bg-danger ms-2">Private</span>
+              {% else %}
+                <span class="badge bg-success ms-2">Public</span>
+              {% endif %}
+            </h5>
+            {% if model.is_private and user.is_authenticated and user.role|lower == "patron" and user != model.creator and user not in model.allowed_users.all %}
+              <p class="fw-bold text-danger" style="font-size: 1.2em;">Details are hidden for private models.</p>
+            {% else %}
+              <p class="card-text">{{ model.description|truncatewords:20 }}</p>
+            {% endif %}
+
+            <!-- Model Info (no action button) -->
+            <div class="mb-3">
+              {% if model.is_private and user.is_authenticated and user.role|lower == "patron" %}
+                 {% if user in model.allowed_users.all %}
+                   <span class="badge bg-info">Access Granted</span>
+                  {% else %}
+                   <span class="badge bg-warning">No Access</span>
+                {% endif %}
+               {% endif %}
+              <p class="text-muted mt-2 mb-1"><small>Created {{ model.created_at|date:"M d, Y" }}</small></p>
+              <div class="d-flex align-items-center mb-2">
+                {% if model.creator.image %}
+                  <img src="{{ model.creator.image.url }}" alt="{{ model.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+                {% else %}
+                  <img src="{% static 'images/default_profile.jpg' %}" alt="{{ model.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+                {% endif %}
+                <div>
+                  <a href="{% url 'profile' model.creator.username %}"
+                     class="h6 mb-0 text-decoration-none">
+                    {{ model.creator.username }}
+                  </a>
+                  {% if model.creator.email %}
+                    <small class="d-block">{{ model.creator.email }}</small>
+                  {% endif %}
+                  <span class="badge {% if model.creator.role|lower == 'librarian' %}bg-success{% else %}bg-danger{% endif %} mt-1">
+                    {{ model.creator.role|title }}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <small class="d-block">
+                  <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+                  {{ model.views }} views&nbsp;&nbsp;
+                  <a href="{% url 'like_model' model.pk %}" class="btn btn-link p-0 like-btn-model" data-model-id="{{ model.pk }}">
+                    {% if user in model.liked_by.all %}
+                      <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20" class="me-1">
+                    {% else %}
+                      <img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="20" height="20" class="me-1">
+                    {% endif %}
+                  </a>
+                  <span class="like-count">{{ model.like_count }}</span> likes
+                </small>
+              </div>
+            </div>
+
+            <!-- Action Button at bottom -->
+            <div class="mt-auto">
+              {% if model.is_private and user.is_authenticated and user.role|lower == "patron" and user != model.creator and user not in model.allowed_users.all %}
+                <a href="{% url 'request_model_access' model.pk %}" class="btn btn-primary w-100">Request Access</a>
+              {% else %}
+                <a href="{% url 'model_detail' model.pk %}" class="btn btn-primary w-100">View Details</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>                          
+      </div>
+    {% empty %}
+      <div class="col text-white">
+        <p>No models available at the moment.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.like-btn-model').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const url = this.href;
+        const modelId = this.getAttribute('data-model-id');
+        const likeBtn = this;
+        
+        // Send an AJAX GET request to the like URL.
+        fetch(url, { credentials: 'include' })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network error: ' + response.status);
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Update the UI based on the response.
+            const likeCountEl = likeBtn.parentElement.querySelector('.like-count');
+            likeCountEl.textContent = data.like_count;
+            
+            // Update the icon based on the response.
+            if (data.liked) {
+              likeBtn.innerHTML = '<img src="{% static "listing_images/like_icon.png" %}" alt="Liked Icon" width="20" height="20" class="me-1">';
+            } else {
+              likeBtn.innerHTML = '<img src="{% static "listing_images/no_like_icon.png" %}" alt="No Like Icon" width="20" height="20" class="me-1">';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    });
+  });
+</script>
+{% endblock %}

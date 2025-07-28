@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags static ratings_tags %}
+{% block hero_content %}
+<style>
+  .card {
+    background: linear-gradient(135deg, #1a1a1a, #333333) !important; /* dark gradient */
+    border: 1px solid #00ffff !important; /* neon cyan border */
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  }
+
+  .card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4) !important;
+  }
+
+  .card-body {
+    background: transparent; /* preserve the dark gradient of the card */
+    padding: 1rem;
+    color: #e0e0e0; /* light text that complements the dark background */
+  }
+
+  .card-text {
+    color: #e0e0e0 !important;
+  }
+
+
+    .star-static {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+  .rating-display {
+    display: flex;
+    align-items: center;
+  }
+  .rating-stars {
+    display: flex;
+    align-items: center;
+  }
+  .rating-stars input[type="radio"] {
+    display: none;
+  }
+  .rating-stars label {
+    cursor: pointer;
+  }
+  /* disable any hover‐scroll animation on image containers */
+  .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: none !important;
+  }
+  .image-container:hover img {
+    transform: none !important;
+  }
+
+  /* ==============================
+     Profile Card & Image Styling
+     ============================== */
+  .profile-card .image-container {
+    height: 250px;          /* match your carousel height */
+    overflow: hidden;      
+    border-radius: 8px;     /* if you want rounded corners */
+  }
+  .profile-card .image-container img,
+  .profile-card .carousel-inner .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* crop to fill */
+  }
+  .profile-card .card-body {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+  }
+  .profile-card .card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .profile-card .card-text {
+    flex-grow: 1;
+    margin-bottom: 1rem;
+  }
+  .profile-card .btn {
+    align-self: stretch;
+  }
+
+  /* initial hidden state */
+  .page-title-animated,
+  .section-header-animated {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out,
+                transform 0.6s ease-out;
+  }
+
+  /* when JS adds .in-view, fade/slide it into place */
+  .page-title-animated.in-view,
+  .section-header-animated.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ensure likes/views icons and text stand out on dark cards */
+  .card-body .stat {
+    display: inline-flex;
+    align-items: center;
+    color: #e0e0e0 !important;
+  }
+  .card-body .stat img {
+    margin-right: 0.25rem;
+    filter: brightness(1.2);
+  }
+</style>
+<div class="container my-4">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title-animated">{{ profile_user.username }}’s Profile</h2>
+    {% if user.is_authenticated and user == profile_user %}
+      <a href="{% url 'profile_edit' %}" class="btn btn-outline-primary">
+        <i class="bi bi-pencil-square"></i> Edit Profile
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Profile Average Rating Display -->
+  <div class="d-flex align-items-center mb-4">
+    <span class="me-2">Average Rating:</span>
+    <div class="rating-display d-inline">
+      {% with avg=avg_rating %}
+        {% for i in "12345" %}
+          {% if forloop.counter <= avg %}
+            <img src="{% static 'listing_images/default-star-full.png' %}" 
+                 alt="Star" width="20" height="20">
+          {% else %}
+            <img src="{% static 'listing_images/default-star-empty.png' %}" 
+                 alt="Star" width="20" height="20">
+          {% endif %} 
+        {% endfor %}
+        <small class="ms-2">{{ avg|floatformat:1 }} / 5</small>
+      {% endwith %}
+    </div>
+  </div>
+
+  {% if user != profile_user %}
+    <!-- Rate This Profile -->
+    <div class="card mb-5 p-3">
+      <h5 class="mb-3 text-white">Rate This Profile</h5>
+      <form id="user-rating-form" method="post" action="{% url 'profile' profile_user.username %}" class="d-flex align-items-center">
+        {% csrf_token %}
+        <div class="rating-stars d-flex me-3">
+          {% for value in "12345" %}
+            <label class="me-1 star-label" style="cursor:pointer;">
+              <input type="radio" name="rating" value="{{ forloop.counter }}" style="display:none;"
+                     {% if form.rating.value|stringformat:"s" == forloop.counter|stringformat:"s" %}checked{% endif %}>
+              <img class="star-img"
+                   src="{% static 'listing_images/default-star-empty.png' %}"
+                   alt="{{ forloop.counter }} Star" width="30" height="30"
+                   onmouseover="this.src='{% static 'listing_images/default-star-full.png' %}'"
+                   onmouseout="if(!this.previousElementSibling.checked) this.src='{% static 'listing_images/default-star-empty.png' %}'">
+            </label>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  {% endif %}
+
+  <!-- User's LoRAs -->
+  {% if profile_user.role == "librarian" %}
+  {% if request.user == profile_user %}
+  <h2 class="mb-3">Your LoRAs</h2>
+  {% else %}
+  <h2 class="mb-3">LoRAs by {{ profile_user.username }}</h2>
+  {% endif %}
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    {% for l in loras %}
+      <div class="col">
+        <div class="card profile-card lora-result-card shadow-sm h-100">
+          {% with images=l.images.all %}
+            {% if images|length > 1 %}
+              <div id="carousel-lora-{{ l.pk }}" class="carousel slide" data-bs-ride="carousel" style="height:250px; overflow:hidden; border-radius:8px;">
+                <div class="carousel-inner" style="height:250px;">
+                  {% for image in images %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height:250px;">
+                      <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ l.title }}" style="object-fit:cover; height:100%; width:100%;">
+                    </div>
+                  {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-lora-{{ l.pk }}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel-lora-{{ l.pk }}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            {% else %}
+              <div class="image-container">
+                {% if images %}
+                  <img src="{{ images.0.image.url }}" class="card-img-top" alt="{{ l.title }}">
+                {% else %}
+                  <img src="{% static 'listing_images/default_item_image.png' %}" class="card-img-top" alt="{{ l.title }}">
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endwith %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ l.title }}</h5>
+            <p class="card-text">{{ l.description|truncatewords:15 }}</p>
+
+            <!-- Rating, Likes & Views -->
+            {% load ratings_tags %}
+            {% with avg_rating=l.ratings|get_average_rating %}
+              <div class="mb-2 d-flex align-items-center">
+                {% for _ in "12345" %}
+                  {% if forloop.counter <= avg_rating %}
+                    <img src="{% static 'listing_images/default-star-full.png' %}"
+                         width="16" height="16" alt="★">
+                  {% else %}
+                    <img src="{% static 'listing_images/default-star-empty.png' %}"
+                         width="16" height="16" alt="☆">
+                  {% endif %}
+                {% endfor %}
+                <small class="ms-2">{{ avg_rating }}/5</small>
+              </div>
+            {% endwith %}
+            <div class="mb-3">
+              <span class="stat">
+                <img src="{% static 'listing_images/like_icon.png' %}" alt="Likes" width="16" height="16">
+                {{ l.liked_by.count }}
+              </span>
+              <span class="stat ms-3">
+                <img src="{% static 'listing_images/view_icon.png' %}" alt="Views" width="16" height="16">
+                {{ l.views }}
+              </span>
+            </div>
+            <!-- /Rating, Likes & Views -->
+
+            <div class="mt-auto">
+              <a href="{% url 'listing_detail' l.pk %}" class="btn btn-primary mt-2">
+                View
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col align-items">
+        <div class="alert alert-warning text-center w-100">
+          {% trans "You haven't created any LoRAs yet." %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- User's Models -->
+  {% if request.user == profile_user %}
+    <h2 class="mb-3 mt-5">Your Models</h2>
+  {% else %}
+    <h2 class="mb-3 mt-5">Models by {{ profile_user.username }}</h2>
+  {% endif %}
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    {% for m in models %}
+      <div class="col">
+        <div class="card profile-card lora-result-card shadow-sm h-100">
+          {% if m.image %}
+            <div class="image-container">
+              <img src="{{ m.image.url }}" alt="{{ m.title }}">
+            </div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ m.title }}</h5>
+            <p class="card-text">{{ m.description|truncatewords:15 }}</p>
+            <div class="mb-3">
+              <span class="stat">
+                <img src="{% static 'listing_images/like_icon.png' %}" alt="Likes" width="16" height="16">
+                {{ m.liked_by.count }}
+              </span>
+              <span class="stat ms-3">
+                <img src="{% static 'listing_images/view_icon.png' %}" alt="Views" width="16" height="16">
+                {{ m.views }}
+              </span>
+            </div>
+            <div class="mt-auto">
+              <small class="">
+                Created: {{ m.created_at|date:"M d, Y" }} |
+                Type: {{ m.model_type|title }}
+              </small>
+            </div>
+            <a href="{% url 'model_detail' m.pk %}" class="btn btn-primary mt-3">View</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col align-items">
+        <div class="alert alert-info text-center w-100">
+          {% trans "You haven't created any models yet." %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Comments Section -->
+  <div class="container mt-5 mb-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title mb-4">Comments</h3>
+        {% if comments %}
+          {% for comment in comments %}
+            <div class="comment-container p-3 mb-3 bg-white shadow-sm rounded">
+              <div class="d-flex">
+                {% if comment.user.image %}
+                  <img src="{{ comment.user.image.url }}"
+                       alt="{{ comment.user.username }}"
+                       class="rounded-circle me-3"
+                       width="50" height="50">
+                {% else %}
+                  <img src="{% static 'images/default_profile.jpg' %}"
+                       alt="{{ comment.user.username }}"
+                       class="rounded-circle me-3"
+                       width="50" height="50">
+                {% endif %}
+                <div>
+                  <h6 class="mb-1">
+                    {{ comment.user.username }}
+                    <small class="ms-2">
+                      {{ comment.created_at|date:"M d, Y h:i A" }}
+                    </small>
+                  </h6>
+                  <p class="mb-2">{{ comment.comment }}</p>
+                  <div class="d-flex align-items-center">
+                    <small>
+                      <span id="comment-like-count-{{ comment.pk }}">
+                        {{ comment.like_count }}
+                      </span> likes
+                    </small>
+                    <a href="{% url 'user_like_comment' comment.pk %}"
+                       class="like-btn-comment ms-3"
+                       data-comment-id="{{ comment.pk }}"
+                       onmousedown="this.blur();"
+                       tabindex="-1">
+                      {% if user in comment.liked_by.all %}
+                        <img src="{% static 'listing_images/like_icon.png' %}"
+                             alt="Liked Icon"
+                             width="16" height="16">
+                      {% else %}
+                        <img src="{% static 'listing_images/no_like_icon.png' %}"
+                             alt="No Like Icon"
+                             width="16" height="16">
+                      {% endif %}
+                    </a>
+                    {% if user.is_authenticated and comment.user == user %}
+                      <a href="{% url 'user_comment_delete' comment.pk %}"
+                         class="btn btn-sm btn-outline-danger ms-3">
+                        Delete
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info">No comments have been added yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Comment Form -->
+  <div class="container mb-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Add a Comment</h4>
+        {% if user.is_authenticated %}
+          <form method="post">
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </div>
+          </form>
+        {% else %}
+          <p>Please <a href="{% url 'account_login' %}">login</a> to add a comment.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Target the rating-stars container in the user-rating-form
+  const ratingContainer = document.querySelector('#user-rating-form .rating-stars');
+  if (!ratingContainer) return;
+
+  const starLabels = Array.from(ratingContainer.querySelectorAll('.star-label'));
+  let selectedIndex = -1;
+
+  // Helper: fill stars up to the given index
+  function setStars(index) {
+    starLabels.forEach((lbl, i) => {
+      const img = lbl.querySelector('.star-img');
+      img.src = i <= index
+        ? '{% static "listing_images/default-star-full.png" %}'
+        : '{% static "listing_images/default-star-empty.png" %}';
+    });
+  }
+
+  // Attach hover and click handlers
+  starLabels.forEach((lbl, i) => {
+    // on hover: preview fill
+    lbl.addEventListener('mouseenter', () => setStars(i));
+    // on leave: revert to selection
+    lbl.addEventListener('mouseleave', () => setStars(selectedIndex));
+    // on click: lock in selection
+    lbl.addEventListener('click', () => {
+      selectedIndex = i;
+      const input = lbl.querySelector('input[name="rating"]');
+      if (input) input.checked = true;
+      setStars(i);
+    });
+  });
+
+  // Initialize from any pre-checked radio button
+  const checked = ratingContainer.querySelector('input[name="rating"]:checked');
+  if (checked) {
+    selectedIndex = Array.from(ratingContainer.querySelectorAll('input[name="rating"]'))
+      .indexOf(checked);
+    setStars(selectedIndex);
+  }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Listing like button handler (for comment likes)
+  document.querySelectorAll('.like-btn-comment').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const url = this.href;
+      const commentId = this.getAttribute('data-comment-id');
+      const currentBtn = this;
+      fetch(url, { 
+        credentials: 'include',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(response => {
+          if (!response.ok) throw new Error('Network error: ' + response.status);
+          return response.json();
+        })
+        .then(data => {
+          const likeCountEl = document.getElementById('comment-like-count-' + commentId);
+          likeCountEl.textContent = data.like_count;
+          if (data.liked) {
+            currentBtn.innerHTML = '<img src="{% static "listing_images/like_icon.png" %}" alt="Liked Icon" width="16" height="16">';
+          } else {
+            currentBtn.innerHTML = '<img src="{% static "listing_images/no_like_icon.png" %}" alt="No Like Icon" width="16" height="16">';
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+  });
+});
+</script>
+{% endblock %}

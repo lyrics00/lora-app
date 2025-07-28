@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Redirecting...{% endblock %}
+{% block hero_content %}
+<div class="container text-center mt-5">
+  <h3>Welcome, {{ user.role|capfirst }} {{ user.username }}!</h3>
+  <p>Redirecting to your home page...</p>
+  <!-- Meta refresh for a 1-second delay -->
+  <meta http-equiv="refresh" content="1;url={{ target_url }}">
+  <!-- JavaScript fallback (optional) -->
+  <script>
+    setTimeout(function() {
+      window.location.href = "{{ target_url }}";
+    }, 500);
+  </script>
+</div>
+{% endblock hero_content %}

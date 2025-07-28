@@ -1,0 +1,87 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% load allauth account %}
+{% load static %}
+{% load socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}
+  {% trans "Sign In" %}
+{% endblock head_title %}
+
+{% block hero_content %}
+<style>
+  .form-text,
+  .invalid-feedback,
+  .help-block,
+  .text-danger {
+    color: #e0e0e0 !important;
+  }
+  .highlight-btn {
+    background: #fff !important;
+    color: #222 !important;
+    border: none !important;
+    font-weight: 600;
+
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+  .highlight-btn:focus,
+  .highlight-btn:hover {
+    background: #00bfff !important;
+    color: #fff !important;
+
+  }
+  .sign-in-btn {
+    background: #007bb5 !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+  .sign-in-btn:focus,
+  .sign-in-btn:hover {
+    background: #005f8a !important;
+    color: #fff !important;
+  }
+</style>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card">
+        <div class="card-body p-5">
+          <h1 class="mb-4 text-center">{% trans "Sign In" %}</h1>
+          {% if SOCIALACCOUNT_ENABLED %}
+            <div class="mb-4 text-center">
+              {% provider_login_url "google" process="login" as google_login_url %}
+              <a href="{{ google_login_url }}" class="btn btn-light border d-inline-flex align-items-center gap-2 px-4 py-2 mb-2 highlight-btn">
+                <img src="{% static 'images/google-icon.png' %}" alt="Google Logo" style="width:24px; height:24px;">
+                <span>{% trans "Sign in with Google" %}</span>
+              </a>
+            </div>
+            <div class="text-center mb-4" style="font-size: 1rem;">
+              — {% trans "or sign in with email" %} —
+            </div>
+          {% endif %}
+
+          <form method="post" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary btn-lg w-100 mt-2 sign-in-btn">
+              {% trans "Sign In" %}
+            </button>
+          </form>
+
+          {% if not SOCIALACCOUNT_ONLY %}
+          <div class="mt-4 text-center">
+            <span>{% trans "Don't have an account?" %}</span>
+            <a href="{{ signup_url }}" class="ms-1 fw-semibold text-decoration-underline highlight-btn" style="padding: 0.5rem 1.25rem; border-radius: 6px; display: inline-block;">
+              {% trans "Sign up" %}
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock hero_content %}

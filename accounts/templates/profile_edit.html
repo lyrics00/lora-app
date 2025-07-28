@@ -1,0 +1,26 @@
+{% extends "layouts/base.html" %}
+{% load static i18n %}
+{% load django_bootstrap5 %}
+
+{% block title %}{% trans "Edit Profile" %}{% endblock %}
+
+{% block hero_content %}
+<div class="d-flex justify-content-center my-5">
+  <div class="col-lg-8 col-md-10">
+    <div class="card">
+      <div class="card-body p-5">
+        <h1 class="mb-4 text-center">{% trans "Edit Profile" %}</h1>
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% bootstrap_form form layout="vertical" %}
+          <div class="text-end">
+            <button type="submit" class="btn btn-success">
+              {% trans "Save Changes" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

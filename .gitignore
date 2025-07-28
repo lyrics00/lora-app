@@ -1,0 +1,12 @@
+accounts/__pycache__/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyc
+accounts/__pycache__/admin.cpython-312.pyc
+db.sqlite3
+accounts/migrations/__pycache__
+/accounts/migrations/__pycache__/*
+/mysite/__pycache__
+uv.lock
+/.venv

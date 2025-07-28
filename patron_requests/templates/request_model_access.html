@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="card-title mb-0">Request Access for: {{ model.title }}</h3>
+        </div>
+        <div class="card-body">
+          <p>This model is private and requires access approval. Please click the button below to submit your request.</p>
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+          </form>
+          <a href="{% url 'model_list' %}" class="btn btn-secondary mt-3">Back to Model List</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block hero_content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card bg-dark text-white shadow-lg border-0 text-center">
+        <div class="card-body p-5">
+          <h1 class="display-5 fw-bold text-white section-header-animated mb-4">📝 Preparing Your Dataset</h1>
+          <ul class="list-unstyled fs-5 mx-auto" style="max-width: 700px;">
+            <li class="mb-3">🖼️ <strong>Collect:</strong> Aim for at least 30–100 high-quality images of your subject.</li>
+            <li class="mb-3">🧹 <strong>Clean:</strong> Remove blurry, irrelevant, or duplicate images.</li>
+            <li class="mb-3">💬 <strong>Caption:</strong> Use tools like <code>BLIP</code> or add descriptions manually.</li>
+            <li class="mb-3">🗂️ <strong>Organize:</strong> Place images and captions in separate folders — <code>images/</code> and <code>captions/</code>.</li>
+            <li class="mb-3">📁 <strong>Package:</strong> Zip your folders and upload them to Google Colab or your chosen training setup.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

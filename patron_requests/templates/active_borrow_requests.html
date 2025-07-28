@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+
+  {% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <h2 class="section-header-animated">Active Borrowing Requests</h2>
+  <hr>
+  {% if active_borrow_requests %}
+    <ul class="list-group">
+      {% for req in active_borrow_requests %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <!-- Customize based on your BorrowRequest fields -->
+            <strong>{{ req.patron.username }}</strong> requested to borrow <em>{{ req.item.title }}</em>
+            <br>
+            <small>Requested on {{ req.created_at|date:"M d, Y" }}</small>
+          </div>
+          <!-- Optionally add Approve/Deny buttons here -->
+          <div> 
+            <a href="{% url 'approve_borrow_request' req.pk %}" class="btn btn-success btn-sm">Approve</a>
+            <a href="{% url 'deny_borrow_request' req.pk %}" class="btn btn-danger btn-sm">Deny</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      There are currently no active borrow requests.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

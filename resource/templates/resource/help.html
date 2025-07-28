@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% load crispy_forms_tags %}
+{% load django_bootstrap5 %}
+{% load widget_tweaks %}
+
+{% block title %}Getting Started{% endblock %}
+
+{% block hero_content %}
+
+<style>
+  .accordion-button.bg-dark,
+  .accordion-button.bg-dark:focus,
+  .accordion-button.bg-dark:not(.collapsed) {
+    color: #fff !important;
+    background-color: #23272b !important;
+    box-shadow: none;
+    border-color: #444;
+  }
+  .accordion-button.bg-dark::after {
+    display: none !important;
+  }
+  
+  .accordion-item.bg-dark {
+    background-color: #23272b !important;
+    border-color: #444 !important;
+  }
+  .accordion-body.bg-dark {
+    background-color: #23272b !important;
+    color: #fff !important;
+  }
+  .h2 {
+    color: #fff !important;
+    animation: none !important;
+  }
+</style>
+
+<div class="container py-5">
+
+  <!-- Page Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-white section-header-animated">Help Page</h1>
+    <p class="lead text-white">In order to request assistance please fill out the following form or click the interactive button on the left to use our chatbot!</p>
+  </div>
+
+  <!-- Success Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+
+
+  <!-- FAQ Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-5 section-header-animated fw-bold text-white">📚 Frequently Asked Questions</h1>
+    <p class="lead text-white">Here are some quick answers to common questions.</p>
+  </div>
+
+  <!-- FAQ Accordion -->
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
+      {% if faqs %}
+        <div class="accordion bg-dark" id="faqAccordion">
+          {% for i, faq in faqs %}
+            {% if i < 5 %}
+            <div class="accordion-item bg-dark border-secondary">
+              <h2 class="accordion-header" id="heading{{ i }}">
+                <button class="accordion-button bg-dark text-white {% if not forloop.first %}collapsed{% endif %}" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapse{{ i }}"
+                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                        aria-controls="collapse{{ i }}">
+                  {{ faq.question }}
+                </button>
+              </h2>
+              <div id="collapse{{ i }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                   aria-labelledby="heading{{ i }}" data-bs-parent="#faqAccordion">
+                <div class="accordion-body bg-dark text-white">
+                  {{ faq.answer }}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="text-center mt-4 mb-5">
+          <a href="{% url 'faq_page' %}" class="btn btn-outline-light">See More</a>
+        </div>
+      {% else %}
+        <p class="text-white">No FAQs available at the moment.</p>
+      {% endif %}
+    </div>
+  </div>
+<!-- Contact Form Card -->
+<div class="row justify-content-center mb-5">
+  <div class="col-md-8">
+    <div class="card contact-card shadow-lg">
+      <div class="card-body">
+        <h3 class="card-title text-center">Contact Form</h3>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name|add_class:"form-control" }}
+            {% if form.name.errors %}
+              <div class="text-danger">{{ form.name.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+            {{ form.email|add_class:"form-control" }}
+            {% if form.email.errors %}
+              <div class="text-danger">{{ form.email.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="{{ form.message.id_for_label }}" class="form-label">Message</label>
+            {{ form.message|add_class:"form-control" }}
+            {% if form.message.errors %}
+              <div class="text-danger">{{ form.message.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">Send Message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+{% endblock %}
