@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+
+  {% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <h2 class="section-header-animated">Active Model Access Requests</h2>
+  <hr>
+  {% if active_model_requests %}
+    <ul class="list-group">
+      {% for req in active_model_requests %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ req.patron.username }}</strong> requested access to <em>{{ req.model.title }}</em>
+            <br>
+            <small>Requested on {{ req.created_at|date:"M d, Y" }}</small>
+          </div>
+          <div>
+            <a href="{% url 'approve_model_request' req.id %}" class="btn btn-success btn-sm">Approve</a>
+            <a href="{% url 'deny_model_request' req.id %}" class="btn btn-danger btn-sm">Deny</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      There are currently no active model access requests.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "layouts/entrance.html" %}
+{% load i18n %}
+{% load allauth %}
+{% load socialaccount %}
+{% load static %}
+
+{% block head_title %}
+  {% trans "Continue with Google" %}
+{% endblock head_title %}
+
+{% block extra_head %}
+<style>
+  .login-card {
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 2rem;
+    background: #181c24;
+    color: #fff;
+  }
+  .login-card .card-body {
+    padding: 2.5rem 2rem;
+  }
+  .login-card h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #00bfff;
+    letter-spacing: 1px;
+  }
+  .social-btn {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    background: #fff;
+    color: #222;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .social-btn:hover {
+    background: #00bfff;
+    color: #fff;
+    box-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff inset;
+  }
+</style>
+{% endblock extra_head %}
+
+{% block hero_content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm login-card">
+        <div class="card-body text-center">
+          <h1>{% trans "Continue with Google" %}</h1>
+          <p class="mb-4">{% trans "Click below to continue to Google for authentication." %}</p>
+          <form method="post" action="{% provider_login_url 'google' process=process %}">
+            {% csrf_token %}
+            <button type="submit" class="social-btn">
+              <img src="{% static 'images/google-icon.png' %}" alt="Google" style="height: 1.5em; margin-right: 0.5em; vertical-align: middle;">
+              {% trans "Continue with Google" %}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock hero_content %}

@@ -1,0 +1,138 @@
+{% load i18n static %}
+<style>
+  /* Smooth dropdown menu corners */
+  .dropdown-menu {
+    border-radius: 0.75rem !important;
+    overflow: hidden;
+  }
+  /* Smooth dropdown item corners on hover/focus */
+  .dropdown-item {
+    border-radius: 0 !important;
+  }
+</style>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+      <img src="{% static 'images/lora-logo-small.PNG' %}" alt="LoRA Logo" width="36" height="36" class="me-2">
+      LoRA CLA
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'gettingstarted_page' %}">Getting Started</a>
+          </li>
+
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+          <a class="nav-link" href="{% url 'lora_resources' %}">Lora Resources</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'model_list' %}">Browse Models</a>
+          </li>
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'model_create' %}">Create Model</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'lora_search' %}">Search LoRAs</a>
+          </li>
+          {% if user.is_authenticated and user.role == "librarian" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'lora_create' %}">Create LoRA</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'my_listings' %}">My LoRAs</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'help_page' %}">Help</a>
+          </li>
+        </ul>
+      <!-- other nav items -->
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+               {% if user.image %}
+               <img src="{{ user.image.url }}" alt="Profile Picture" class="rounded-circle me-2" width="30" height="30">
+              {% else %}
+               <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture" class="rounded-circle me-2" width="30" height="30">
+              {% endif %}
+              <span class="fw-semibold">{{ user.role|capfirst }} - {{ user.username }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="userDropdown" style="min-width: 260px;">
+              <li class="bg-light p-3 border-bottom">
+                <div class="d-flex align-items-center">
+                  {% if user.image %}
+                    <img src="{{ user.image.url }}" alt="Profile Picture" class="rounded-circle me-2" width="48" height="48">
+                  {% else %}
+                    <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture" class="rounded-circle me-2" width="48" height="48">
+                  {% endif %}
+                  <div>
+                    <div class="fw-bold">{{ user.username }}</div>
+                    <div class="text-muted small">{{ user.role|capfirst }}</div>
+                  </div>
+                </div>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" href="{% url 'profile' request.user %}">
+                  <i class="bi bi-person me-2"></i>My Profile
+                </a>
+                <a class="dropdown-item d-flex justify-content-between align-items-center" href="{% url 'notifications_page' %}">
+                  <span><i class="bi bi-bell me-2"></i>Notifications</span>
+                  {% if user.notifications.unread_count > 0 %}
+                    <span class="badge bg-danger">{{ user.notifications.unread_count }}</span>
+                  {% endif %}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'view_active_borrowed_loras' %}">
+                  <i class="bi bi-bookmark-check me-2"></i>My Borrowed LoRAs
+                </a>
+              </li>
+              {% if user.role == "librarian" %}
+                <li>
+                  <a class="dropdown-item" href="{% url 'promote_patron' %}">
+                    <i class="bi bi-person-plus me-2"></i>Promote a Patron
+                  </a>
+                  <a class="dropdown-item" href="{% url 'view_active_model_requests' %}">
+                    <i class="bi bi-box-arrow-in-down me-2"></i>Active Model Requests
+                  </a>
+                  <a class="dropdown-item" href="{% url 'view_active_borrow_requests' %}">
+                    <i class="bi bi-arrow-repeat me-2"></i>Active LoRA Requests
+                  </a>
+                </li>
+              {% endif %}
+              <li>
+                <a class="dropdown-item" href="{% url 'account_settings' %}">
+                  <i class="bi bi-gear me-2"></i>Settings
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li class="mb-2">
+                <a class="dropdown-item text-danger" href="{% url 'account_logout' %}">
+                  <i class="bi bi-box-arrow-right me-2"></i>Log out
+                </a>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          {% url 'account_login' as login_url_ %}   
+          {% if login_url_ %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ login_url_ }}">Log in</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

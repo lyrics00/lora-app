@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <div class="alert alert-danger" role="alert">
+    {{ error_message }}
+  </div>
+  <a href="{% url 'home' %}" class="btn btn-primary">Return Home</a>
+</div>
+{% endblock %}

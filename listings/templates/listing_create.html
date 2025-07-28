@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block hero_content %}
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h2 class="mb-0">Create Item</h2>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.title.label_tag }}
+          {{ form.title|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+          {{ form.description.label_tag }}
+          {{ form.description|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+          {{ form.location.label_tag }}
+          {{ form.location|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+          <label for="id_images" class="form-label">Upload Images</label>
+          <input type="file" name="images" id="id_images" accept="image/*"  multiple class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Item</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

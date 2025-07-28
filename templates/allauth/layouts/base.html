@@ -1,0 +1,330 @@
+{% load i18n django_bootstrap5 static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block head_title %}LoRA Market{% endblock head_title %}</title>
+
+    <!-- Bootstrap CSS -->
+    {% bootstrap_css %}
+
+    <!-- Futuristic Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <style>
+ *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overscroll-behavior: none;
+        font-family: 'Montserrat', sans-serif;
+        background-color: #0d0d0d; /* Deep black chrome background */
+        color: #e0e0e0;
+        font-size: .95rem;
+        font-size: .95rem;
+      }
+
+      nav.navbar {
+        background: linear-gradient(135deg, #1a1a1a, #111);
+        box-shadow: 0 2px 10px rgba(0, 255, 255, 0.1);
+        border-bottom: 1px solid #333;
+      }
+
+      .special-url {
+        margin-inline: 1rem;
+      }
+
+      .fixed-top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+
+      .hero {
+        min-height: 100vh;
+        width: 100vw;
+        position: relative;
+        margin: 0;
+        display: flex;
+        /* Center children vertically and horizontally */
+        justify-content: center;
+        align-items: center;
+        scroll-snap-align: start;
+        background: url("{% block hero_background %}{% static 'images/hero-home.jpg' %}{% endblock %}") no-repeat center center;
+        background-size: cover;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(5, 5, 5, 0.6);
+        backdrop-filter: blur(6px);
+        z-index: 0;
+      }
+
+      .hero > .hero-content {
+        position: relative;
+        z-index: 1;
+        /* Fill the full viewport */
+        width: 90%;
+        min-height: 100vh;
+        height: 100%;
+        margin: 0 auto;
+        padding: 2rem;
+        padding-top: 70px;
+        /* darker, more opaque overlay */
+        background: rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .navbar .dropdown-menu {
+        background-color: #343a40;
+        border: none;
+      }
+
+      .navbar .dropdown-menu .dropdown-item {
+        color: #fff;
+      }
+
+      .navbar .dropdown-menu .dropdown-item:hover,
+      .navbar .dropdown-menu .dropdown-item:focus {
+        background-color: #495057;
+        color: #fff;
+      }
+
+      .navbar .dropdown-menu .dropdown-item:focus {
+        outline: none;
+      }
+
+      nav.navbar .navbar-nav {
+        align-items: center;
+      }
+
+      nav.navbar .navbar-nav .nav-item {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+
+      .hero-content h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #00ffff;
+        text-shadow: 0 0 10px #00ffff;
+      }
+
+      .hero-content p {
+        font-size: 1.2rem;
+        color: #ccc;
+        margin-top: 0.5rem;
+      }
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+        50% { box-shadow: 0 0 20px rgba(0,255,255,0.5); }
+      }
+
+      .glow-button {
+        border: 2px solid #00ffff;
+        background: transparent;
+        color: #00ffff;
+        padding: 0.5rem 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 30px;
+        transition: 0.3s ease;
+        animation: pulse-glow 2s infinite;
+      }
+
+      .glow-button:hover {
+        background: #00ffff;
+        color: #000;
+        animation: none;
+      }
+
+
+      .hero-content h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #00ffff;
+        text-shadow: 0 0 10px #00ffff;
+      }
+
+      .hero-content p {
+        font-size: 1.2rem;
+        color: #ccc;
+        margin-top: 0.5rem;
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+      }
+
+      .glow-button {
+        border: 2px solid #00ffff;
+        background: transparent;
+        color: #00ffff;
+        padding: 0.5rem 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 30px;
+        transition: 0.3s ease;
+        animation: pulse-glow 2s infinite;
+      }
+
+      .glow-button:hover {
+        background: #00ffff;
+        color: #000;
+        animation: none;
+      }
+      .card {
+        background: linear-gradient(135deg, #1a1a1a, #333333) !important; /* dark gradient */
+        border: 1px solid #00ffff !important; /* neon cyan border */
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+      }
+
+      .card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4) !important;
+      }
+
+      .card-body {
+        background: transparent; /* preserve the dark gradient of the card */
+        padding: 1rem;
+        color: #e0e0e0; /* light text that complements the dark background */
+      }
+
+      .card-text {
+        color: #e0e0e0 !important;
+      }
+
+      .comment-container {
+        background: linear-gradient(135deg, #1a1a1a, #333333) !important;  /* dark gradient */
+        border: 1px solid #00ffff !important;  /* neon cyan border */
+        border-radius: 8px;
+        padding: 1rem;
+        color: #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+      }
+      /* Ensure links in comments also match the theme */
+      .comment-container a {
+        color: #e0e0e0 !important;
+      }
+      
+
+
+      /* Remove the existing border-radius rule on the image and add the proper corner rounding */
+      .card .col-md-4 img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        border-top-right-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
+
+  
+
+
+      /* Sleek fade-in and underline animation for page/section headers */
+      .page-title-animated, .section-header-animated {
+        position: relative;
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.7s cubic-bezier(.77,0,.18,1), transform 0.7s cubic-bezier(.77,0,.18,1);
+      }
+      .page-title-animated.in-view, .section-header-animated.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .page-title-animated::after, .section-header-animated::after {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 50%;
+        bottom: -8px;
+        width: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #00fff0 0%, #00bfff 100%);
+        border-radius: 2px;
+        transform: translateX(-50%);
+        transition: width 0.5s cubic-bezier(.77,0,.18,1);
+      }
+      .page-title-animated.in-view::after, .section-header-animated.in-view::after {
+        width: 100%;
+      }
+      .form-text {
+        color: #b8eaff !important; /* or #fff for pure white */
+      }
+      .placeholder {
+        color: #b8eaff !important; /* or #fff for pure white */
+      }
+    </style>
+
+    {% block extra_head %}{% endblock extra_head %}
+  </head>
+
+  <body>
+    {% block navbar %}
+      {% include 'partials/navbar_default_settings.html' %}
+    {% endblock %}
+
+    <section class="hero">
+      <div class="hero-content">
+        {% block hero_content %}{% endblock hero_content %}
+      </div>
+    </section>
+
+    {% block content %}{% endblock content %}
+
+    <footer class="py-3" style="background: linear-gradient(135deg, #1a1a1a, #111); border-top: 1px solid #333; text-align: center; width: 100%;">
+      <div class="container">
+        <p class="text-center text-light mb-0">
+          DISCLAIMER: This system is for a class project (CS 3240). The system is not monitored. Do not submit any real personal information.
+        </p>
+      </div>
+    </footer>
+
+    {% bootstrap_javascript %}
+    {% block extra_body %}{% endblock extra_body %}
+  </body>
+  <script>
+      // Add 'in-view' class to animate underline and fade when headers enter viewport
+
+      document.addEventListener("DOMContentLoaded", function() {
+        function animateHeaders() {
+          document.querySelectorAll('.page-title-animated, .section-header-animated, h2').forEach(function(el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 40) {
+              el.classList.add('in-view');
+            }
+          });
+        }
+        animateHeaders();
+        window.addEventListener('scroll', animateHeaders);
+      });
+  </script>
+</html>

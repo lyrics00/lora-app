@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% load crispy_forms_tags %}
+{% load django_bootstrap5 %}
+{% load widget_tweaks %}
+
+{% block title %}Getting Started{% endblock %}
+
+{% block hero_content %}
+
+<style>
+  .accordion-button.bg-dark,
+  .accordion-button.bg-dark:focus,
+  .accordion-button.bg-dark:not(.collapsed) {
+    color: #fff !important;
+    background-color: #23272b !important;
+    box-shadow: none;
+    border-color: #444;
+  }
+  .accordion-button.bg-dark::after {
+    display: none !important;
+  }
+  
+  .accordion-item.bg-dark {
+    background-color: #23272b !important;
+    border-color: #444 !important;
+  }
+  .accordion-body.bg-dark {
+    background-color: #23272b !important;
+    color: #fff !important;
+  }
+  .h2 {
+    color: #fff !important;
+    animation: none !important;
+  }
+</style>
+
+<div class="container py-5">
+
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-white section-header-animated">Getting Started</h1>
+    <p class="lead text-white">In order to fully access the website, please login as either patron or librarian</p>
+  </div>
+
+  <p class="lead">
+    <strong>LoRA (Low-Rank Adaptation)</strong> is a method that allows you to fine-tune large models efficiently by introducing small trainable matrices while keeping the main model weights frozen.
+  This means you can train customized models with minimal compute and storage — ideal for personal or small-scale use cases.
+  </p>
+  <p class="lead">
+  The compactness also allows LoRAs to be shared very easily in a plug-and-play fashion. Note, however, that a LoRA can only be used on the corresponding base model it was originally trained from.
+  </p>
+  <p class="lead">
+  This website is a place for people to catalouge and share(through the "Borrow" feature) the LoRA's they have trained. For resources on how to train your own LoRA, check out the "LoRA Resources" section of the site.
+  </p>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-5 mb-4">
+        <div class="card shadow-lg h-100 border-0">
+          <div class="card-body ">
+            <h3 class="card-title">Create Your Own LoRA</h3>
+            <p class="card-text">
+              Want full control over training? Learn how to generate your own LoRA models from scratch using tools like <code>kohya_ss</code> or our Google Colab notebook.
+            </p>
+            <div class="d-flex justify-content-center">
+            <a href="{% url 'dataset_guide' %}" class="btn btn-primary mt-2">Learn about how to create dataset</a>
+          </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-md-5 mb-4">
+        <div class="card shadow-lg h-100 border-0">
+          <div class="card-body">
+            <h3 class="card-title">Use a LoRA from Hugging Face</h3>
+            <p class="card-text">
+              Quickly get started by importing a publicly shared LoRA model from Hugging Face. Just copy the model link, and head to LoRA create tab to get started.
+            </p>
+            <div class="d-flex justify-content-center">
+              <div class="d-flex justify-content-center">
+                <a href="{% url 'lora_resources' %}" class="btn btn-primary mt-2">Learn how to import from Hugging Face</a>
+              </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card shadow-lg h-100 border-0">
+      <div class="card-body text-center">
+        <h3 class="card-title">Need Help? Visit the FAQ</h3>
+        <p class="card-text">
+          Have questions about uploads, formats, or permissions? Our FAQ has detailed answers to the most common issues and a contact form.
+        </p>
+        <a href="{% url 'faq_page' %}" class="btn btn-primary mt-2">Go to FAQ</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
