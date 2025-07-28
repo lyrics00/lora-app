@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <h2>Active Collection Access Requests & Notifications</h2>
+  <hr>
+
+  <!-- Notifications Section -->
+  <h4>Unread Notifications</h4>
+  {% if notifications %}
+    <ul class="list-group mb-4">
+      {% for note in notifications %}
+        <li class="list-group-item">
+          <strong>{{ note.actor.username }}</strong> {{ note.verb }} 
+          <em>{{ note.target.title }}</em>
+          <br>
+          <small>{{ note.description }} on {{ note.timestamp|date:"M d, Y H:i" }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No new notifications.</p>
+  {% endif %}
+
+  <!-- Collection Access Requests Section -->
+  <h4>Collection Access Requests</h4>
+  {% if active_collection_requests %}
+    <ul class="list-group">
+      {% for req in active_collection_requests %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ req.patron.username }}</strong> requested access to <em>{{ req.collection.title }}</em>
+            <br>
+            <small>Requested on {{ req.created_at|date:"M d, Y" }}</small>
+          </div>
+          <div>
+            <a href="{% url 'approve_collection_request' req.id %}" class="btn btn-sm btn-success">Approve</a>
+            <a href="{% url 'deny_collection_request' req.id %}" class="btn btn-sm btn-danger">Deny</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are currently no active collection access requests.</p>
+  {% endif %}
+</div>
+{% endblock %}

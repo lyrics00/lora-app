@@ -1,0 +1,26 @@
+{% extends "layouts/entrance.html" %}
+{% load i18n %}
+{% load socialaccount %}
+{% load static %}
+
+{% block head_title %}Sign In{% endblock head_title %}
+
+{% block hero_content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+          <h1 class="mb-0">{% trans "Sign In" %}</h1>
+        </div>
+        <div class="card-body text-center">
+          {% provider_login_url "google" process="login" as google_login_url %}
+          <a href="{{ google_login_url }}" class="btn btn-danger btn-lg d-block py-3">
+            <span class="fw-bold">{% trans "Sign in with Google" %}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock hero_content %}

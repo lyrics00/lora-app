@@ -1,0 +1,77 @@
+{% load i18n static %}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      My Site
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'collection_list' %}">Browse Collections</a>
+          </li>
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'collection_create' %}">Create Collection</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'item_search' %}">Search Items</a>
+            </li>
+          {% endif %}
+          {% if user.is_authenticated and user.role == "librarian" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'listing_create' %}">Create Item</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'my_listings' %}">My Items</a>
+            </li>
+          {% endif %}
+          
+        </ul>
+      <!-- other nav items -->
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+               data-bs-toggle="dropdown" aria-expanded="false">
+               {% if user.image %}
+               <img src="{{ user.image.url }}" alt="Profile Picture" class="rounded-circle" width="30" height="30">
+              {% else %}
+               <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture" class="rounded-circle" width="30" height="30">
+              {% endif %}
+              {{ user.role|capfirst }} - {{ user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item d-flex justify-content-between align-items-center" href="{% url 'notifications_page' %}">
+                  Notifications
+                  {% if user.notifications.unread_count > 0 %}
+                    <span class="badge bg-danger">{{ user.notifications.unread_count }}</span>
+                  {% endif %}
+                </a>
+              </li>
+              {% if user.role == "librarian" %}
+                <li>
+                  <a class="dropdown-item" href="{% url 'view_active_collection_requests' %}">Active Collection Requests</a>
+                </li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{% url 'account_settings' %}">Settings</a></li>
+              <!-- Add other dropdown items as needed -->
+            
+            </ul>
+          </li>
+        {% else %}
+          {% url 'account_login' as login_url_ %}   
+          {% if login_url_ %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ login_url_ }}">Log in</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

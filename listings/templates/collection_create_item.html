@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block hero_content %}
+<div class="container py-5">
+  <h2 class="mb-4 text-white">Create Item for Collection: {{ collection.title }}</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary mt-3">Create Item</button>
+      </form>
+      <a href="{% url 'collection_detail' collection.pk %}" class="btn btn-secondary mt-3">Back to Collection</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
