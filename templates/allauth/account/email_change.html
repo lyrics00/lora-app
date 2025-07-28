@@ -1,0 +1,85 @@
+{% extends "layouts/manage.html" %}
+{% load allauth i18n django_bootstrap5 widget_tweaks %}
+
+{% block head_title %}
+    {% trans "Email Addresses" %}
+{% endblock head_title %}
+
+
+
+
+{% block hero_content %}
+<div class="container text-center">
+{% include "allauth/layouts/message.html" %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h3 class="mb-0">{% trans "Email Address" %}</h3>
+        </div>
+        <div class="card-body">
+            {% if not emailaddresses %}
+                {% include "account/snippets/warn_no_email.html" %}
+            {% endif %}
+            <form method="post" action="{% url 'account_email' %}">
+                {% csrf_token %}
+                {% if current_emailaddress %}
+                <div class="mb-3">
+                    <label for="current_email" class="form-label">
+                        {% trans "Current email" %}:
+                    </label>
+                    <input type="email" id="current_email" class="form-control" value="{{ current_emailaddress.email }}" disabled />
+                </div>
+                {% endif %}
+                {% if new_emailaddress %}
+                <div class="mb-3">
+                    <label for="new_email" class="form-label">
+                        {% if current_emailaddress %}
+                            {% trans "Changing to" %}
+                        {% else %}
+                            {% trans "Current email" %}
+                        {% endif %}:
+                    </label>
+                    <input type="email" id="new_email" class="form-control" value="{{ new_emailaddress.email }}" disabled />
+                    <small class="form-text text-muted">
+                        {% if not new_emailaddress.verified %}
+                            {% blocktranslate %}Your email address is still pending verification.{% endblocktranslate %}
+                        {% else %}
+                            {% trans "Your email address has been verified." %}
+                        {% endif %}
+                    </small>
+                    {% if not new_emailaddress.verified %}
+                    <div class="mt-2">
+                        <button form="pending-email" type="submit" name="action_send" class="btn btn-secondary btn-sm">
+                            {% trans "Re-send Verification" %}
+                        </button>
+                        {% if current_emailaddress %}
+                        <button form="pending-email" type="submit" name="action_remove" class="btn btn-danger btn-sm">
+                            {% trans "Cancel Change" %}
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label for="{{ form.email.auto_id }}" class="form-label">
+                        {% trans "Change to" %}:
+                    </label>
+                    {{ form.email|add_class:"form-control" }}
+                    {% for error in form.email.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <button type="submit" name="action_add" class="btn btn-primary">
+                    {% trans "Change Email" %}
+                </button>
+            </form>
+            {% if new_emailaddress and not new_emailaddress.verified %}
+            <form style="display: none" id="pending-email" method="post" action="{% url 'account_email' %}">
+                {% csrf_token %}
+                <input type="hidden" name="email" value="{{ new_emailaddress.email }}" />
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock hero_content %}

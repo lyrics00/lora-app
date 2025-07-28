@@ -1,0 +1,291 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}My Site{% endblock %}</title>
+
+    {% bootstrap_css %}
+    
+    <!-- Futuristic Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <style>
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overscroll-behavior: none;
+        font-family: 'Montserrat', sans-serif;
+        background-color: #0d0d0d; /* Deep black chrome background */
+        color: #e0e0e0;
+        font-size: .95rem;
+      }
+
+      nav.navbar {
+        background: linear-gradient(135deg, #1a1a1a, #111);
+        box-shadow: 0 2px 10px rgba(0, 255, 255, 0.1);
+        border-bottom: 1px solid #333;
+      }
+
+      .special-url {
+        margin-inline: 1rem;
+      }
+
+      .fixed-top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+
+      .hero {
+        min-height: 100vh;
+        width: 100vw;
+        position: relative;
+        margin: 0;
+        display: flex;
+        /* Center children vertically and horizontally */
+        justify-content: center;
+        align-items: center;
+        scroll-snap-align: start;
+        background: url("{% block hero_background %}{% static 'images/hero-home.jpg' %}{% endblock %}") no-repeat center center;
+        background-size: cover;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(5, 5, 5, 0.6);
+        backdrop-filter: blur(6px);
+        z-index: 0;
+      }
+
+      .hero > .hero-content {
+        position: relative;
+        z-index: 1;
+        /* Allow content to expand with controlled limits */
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        padding-top: 70px;
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+      }
+
+      .navbar .dropdown-menu {
+        background-color: #343a40;
+        border: none;
+      }
+
+      .navbar .dropdown-menu .dropdown-item {
+        color: #fff;
+      }
+
+      .navbar .dropdown-menu .dropdown-item:hover,
+      .navbar .dropdown-menu .dropdown-item:focus {
+        background-color: #495057;
+        color: #fff;
+      }
+
+      .navbar .dropdown-menu .dropdown-item:focus {
+        outline: none;
+      }
+
+      nav.navbar .navbar-nav {
+        align-items: center;
+      }
+
+      nav.navbar .navbar-nav .nav-item {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+
+      .hero-content h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #00ffff;
+        text-shadow: 0 0 10px #00ffff;
+      }
+
+      .hero-content p {
+        font-size: 1.2rem;
+        color: #ccc;
+        margin-top: 0.5rem;
+      }
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+        50% { box-shadow: 0 0 20px rgba(0,255,255,0.5); }
+      }
+
+      .glow-button {
+        border: 2px solid #00ffff;
+        background: transparent;
+        color: #00ffff;
+        padding: 0.5rem 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 30px;
+        transition: 0.3s ease;
+        animation: pulse-glow 2s infinite;
+      }
+
+      .glow-button:hover {
+        background: #00ffff;
+        color: #000;
+        animation: none;
+      }
+
+
+      .hero-content h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #00ffff;
+        text-shadow: 0 0 10px #00ffff;
+      }
+
+      .hero-content p {
+        font-size: 1.2rem;
+        color: #ccc;
+        margin-top: 0.5rem;
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+      }
+
+      .glow-button {
+        border: 2px solid #00ffff;
+        background: transparent;
+        color: #00ffff;
+        padding: 0.5rem 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 30px;
+        transition: 0.3s ease;
+        animation: pulse-glow 2s infinite;
+      }
+
+      .glow-button:hover {
+        background: #00ffff;
+        color: #000;
+        animation: none;
+      }
+      .card {
+        background: linear-gradient(135deg, #1a1a1a, #333333); /* dark gradient */
+        border: 1px solid #00ffff; /* neon cyan border */
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+      }
+
+      .card-body {
+        background: transparent; /* preserve the dark gradient of the card */
+        padding: 1rem;
+        color: #e0e0e0; /* light text that complements the dark background */
+      }
+
+      .card-text {
+        color: #e0e0e0 !important;
+      }
+
+      .comment-container {
+        background: linear-gradient(135deg, #1a1a1a, #333333) !important;  /* dark gradient */
+        border: 1px solid #00ffff !important;  /* neon cyan border */
+        border-radius: 8px;
+        padding: 1rem;
+        color: #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+      }
+      /* Ensure links in comments also match the theme */
+      .comment-container a {
+        color: #e0e0e0 !important;
+      }
+      
+
+
+      /* Remove the existing border-radius rule on the image and add the proper corner rounding */
+      .card .col-md-4 img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        border-top-right-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
+      /* Apply rounded corners to the main gallery image container */
+      #gallery-container {
+        display: flex;
+        flex-direction: row-reverse;
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+        font-size: 0 !important;  /* Remove any inline whitespace */
+        line-height: 0 !important; /* Remove inline gaps */
+        margin: 0;
+        padding: 0;
+      }
+
+      .main-image-container {
+        flex-grow: 1;
+        overflow: hidden;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        margin: 0 !important;
+        width: 100%;
+        height: 100%;
+      }
+
+
+      
+    </style>
+
+  </head>
+
+  <body>
+    {% block navbar %}
+      {% include 'partials/navbar_default_home.html' %}
+    {% endblock navbar %}
+
+    <section class="hero">
+      <div class="hero-content">
+        {% block hero_content %}
+          <h1>Welcome to My Site</h1>
+          <p>Enjoy your stay!</p>
+        {% endblock hero_content %}
+      </div>
+    </section>
+
+    {% block content %}{% endblock content %}
+
+    {% bootstrap_javascript %}
+  </body>
+</html>

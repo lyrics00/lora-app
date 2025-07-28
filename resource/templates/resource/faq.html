@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block hero_content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-white">📚 Frequently Asked Questions</h1>
+    <p class="lead text-white">Here are answers to some of the most common questions we receive about LoRA training, uploads, and best practices.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
+      <div class="accordion" id="faqAccordion">
+
+        {% comment %} Accordion Items {% endcomment %}
+        {% for i, faq in faqs %}
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading{{ i }}">
+            <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ i }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ i }}">
+              {{ faq.question }}
+            </button>
+          </h2>
+          <div id="collapse{{ i }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ i }}" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="{% url 'help_page' %}" class="btn btn-secondary">← Back to Help</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

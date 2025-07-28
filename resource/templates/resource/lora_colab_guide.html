@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block hero_content %}
+<div class="container py-5">
+  <div class="col-lg-10 mx-auto">
+    <h1 class="display-5 fw-bold mb-4 text-white">📖 LoRA Training in Google Colab</h1>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <ol>
+          <li><strong>Prepare your dataset:</strong> At least 20–100 images of your subject, ideally with captions.</li>
+          <li><strong>Upload dataset to Google Drive:</strong> Organize it into folders (e.g., <code>dataset/images</code> and <code>dataset/captions</code>).</li>
+          <li><strong>Open the <a href="https://colab.research.google.com/github/kohya-ss/sd-scripts/blob/main/train_network_GUI_colab.ipynb" target="_blank">Colab Notebook</a>:</strong> and follow the cells step-by-step.</li>
+          <li><strong>Adjust your training settings:</strong> Pick model, image resolution, batch size, learning rate, and steps.</li>
+          <li><strong>Start training:</strong> Run all training cells. Monitor RAM/GPU usage on Colab.</li>
+          <li><strong>Download your trained LoRA:</strong> Your model will be saved to your Drive. Test it in tools like Automatic1111 or ComfyUI.</li>
+        </ol>
+        <a href="{% url 'lora_resources' %}" class="btn btn-secondary mt-4">← Back to LoRA Resources</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

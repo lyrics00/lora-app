@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container py-5">
+  <h2 class="mb-4">Select Allowed Users for Collection: {{ collection.title }}</h2>
+  <!-- Search Form -->
+  <form method="get" class="mb-3">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Search users" value="{{ search_query }}">
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </div>
+  </form>
+  <!-- User List with checkboxes -->
+  <form method="post">
+    {% csrf_token %}
+    <div class="row">
+      {% for user in users %}
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ user.username }}</h5>
+            <p class="card-text">{{ user.email }}</p>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="selected_users" value="{{ user.pk }}"
+              {% if user in collection.allowed_users.all %}checked{% endif %}>
+              <label class="form-check-label">Select</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <p>No users found.</p>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary">Save Selected Users</button>
+  </form>
+  <a href="{% url 'collection_detail' collection.pk %}" class="btn btn-secondary mt-3">Back to Edit Collection</a>
+</div>
+{% endblock %}

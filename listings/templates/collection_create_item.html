@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block hero_content %}
+<div class="container py-5">
+  <h2 class="mb-4 text-white">Create Item for Collection: {{ collection.title }}</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data" action="{% url 'collection_create_item' collection.pk %}">
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger" role="alert">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="form-group mt-3">
+          <label for="id_images" class="form-label">Item Images</label>
+          <input type="file" name="images" id="id_images" class="form-control" multiple>
+          <small class="form-text text-muted">You can select multiple images.</small>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Create Item</button>
+      </form>
+      <a href="{% url 'collection_detail' collection.pk %}" class="btn btn-secondary mt-3">Back to Collection</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

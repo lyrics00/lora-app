@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block hero_content %}
+<div class="container my-5">
+  <!-- Message Display -->
+  {% if messages %}
+    <div class="my-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col text-center text-white">
+      <h2>Collections</h2>
+    </div>
+  </div>
+
+  <!-- Search Form -->
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Search collections" value="{{ request.GET.q }}">
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+    <div class="mt-2">
+      <label>Sort by:</label>
+      <select name="sort" onchange="this.form.submit()">
+        <option value="">-- Select --</option>
+        <option value="likes" {% if request.GET.sort == "likes" %}selected{% endif %}>Likes</option>
+        <option value="views" {% if request.GET.sort == "views" %}selected{% endif %}>Views</option>
+      </select>
+    </div>
+  </form>
+
+  <!-- Centered Create Collection Button for Librarians -->
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      {% if user.is_authenticated and user.role == "librarian" %}
+        <a href="{% url 'collection_create' %}" class="btn btn-success">Create Collection</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Collections Grid -->
+  <div class="row">
+    {% for collection in collections %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if collection.image %}
+            <img src="{{ collection.image.url }}" class="card-img-top" alt="{{ collection.title }}">
+          {% endif %}
+          <!-- Inside your collection card template -->
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">
+              {{ collection.title }}
+              {% if collection.is_private %}
+                <span class="badge bg-danger ms-2">Private</span>
+              {% else %}
+                <span class="badge bg-success ms-2">Public</span>
+              {% endif %}
+            </h5>
+            {% if collection.is_private and user.is_authenticated and user.role|lower == "patron" and user != collection.creator and user not in collection.allowed_users.all %}
+              <p class="fw-bold text-danger" style="font-size: 1.2em; color: red">Details are hidden for private collections.</p>
+            {% else %}
+              <p class="card-text">{{ collection.description|truncatewords:20 }}</p>
+            {% endif %}
+            <!-- Collection Info Footer -->
+            <div class="mt-auto">
+              <!-- Created Date -->
+              <div class="mb-2">
+                <p class="card-text text-muted mb-0">
+                  <small>Created on {{ collection.created_at|date:"M d, Y" }}</small>
+                </p>
+              </div>
+              <!-- Creator Info -->
+              <div class="d-flex align-items-center mb-3">
+                {% if collection.creator.image %}
+                  <img src="{{ collection.creator.image.url }}" alt="{{ collection.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+                {% else %}
+                  <img src="{% static 'images/default_profile.jpg' %}" alt="{{ collection.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+                {% endif %}
+                <div>
+                  <span class="h6 mb-0 d-block">{{ collection.creator.username }}</span>
+                  {% if collection.creator.email %}
+                    <small class="d-block">{{ collection.creator.email }}</small>
+                  {% endif %}
+                  <span class="badge {% if collection.creator.role|lower == 'librarian' %}bg-success{% elif collection.creator.role|lower == 'patron' %}bg-danger{% else %}bg-secondary{% endif %} mt-1">
+                    {{ collection.creator.role|title }}
+                  </span>
+                </div>
+              </div>
+              <!-- Views and Likes -->
+              <div class="mb-3">
+                <small class="d-block">
+                  <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+                  {{ collection.views }} views&nbsp;&nbsp;
+                  <a href="{% url 'like_collection' collection.pk %}" class="btn btn-link p-0 like-btn-collection" data-collection-id="{{ collection.pk }}">
+                    {% if user in collection.liked_by.all %}
+                      <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20" class="me-1">
+                    {% else %}
+                      <img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="20" height="20" class="me-1">
+                    {% endif %}
+                  </a>
+                  <span class="like-count">{{ collection.like_count }}</span> likes
+                </small>
+              </div>
+              <!-- Conditionally show View Details or Request Access Button -->
+              <div class="mt-2">
+                {% if collection.is_private and user.is_authenticated and user.role|lower == "patron" and user != collection.creator and user not in collection.allowed_users.all %}
+                  <a href="{% url 'request_collection_access' collection.pk %}" class="btn btn-primary d-block">Request Access</a>
+                {% else %}
+                  <a href="{% url 'collection_detail' collection.pk %}" class="btn btn-primary d-block">View Details</a>
+                {% endif %}
+              </div>
+              <!-- Display Access Status for Private Collections -->
+              {% if collection.is_private and user.is_authenticated and user.role|lower == "patron" %}
+                <div class="mt-2">
+                  {% if user in collection.allowed_users.all %}
+                    <span class="badge bg-info">Access Granted</span>
+                  {% else %}
+                    <span class="badge bg-warning">No Access</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>                          
+      </div>
+    {% empty %}
+      <div class="col text-white">
+        <p>No collections available at the moment.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.like-btn-collection').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const url = this.href;
+        const collectionId = this.getAttribute('data-collection-id');
+        const likeBtn = this;
+        
+        // Send an AJAX GET request to the like URL.
+        fetch(url, { credentials: 'include' })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network error: ' + response.status);
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Update the UI based on the response.
+            const likeCountEl = likeBtn.parentElement.querySelector('.like-count');
+            likeCountEl.textContent = data.like_count;
+            
+            // Update the icon based on the response.
+            if (data.liked) {
+              likeBtn.innerHTML = '<img src="{% static "listing_images/like_icon.png" %}" alt="Liked Icon" width="20" height="20" class="me-1">';
+            } else {
+              likeBtn.innerHTML = '<img src="{% static "listing_images/no_like_icon.png" %}" alt="No Like Icon" width="20" height="20" class="me-1">';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    });
+  });
+</script>
+{% endblock %}
