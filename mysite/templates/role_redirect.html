@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Redirecting...{% endblock %}
+
+{% block hero_content %}
+  <style>
+    .redirect-box {
+      background: rgba(0, 0, 0, 0.65);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-top: 4rem;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.3);
+      text-align: center;
+    }
+
+    .redirect-box h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      color: #ff1e56;
+      text-shadow: 0 0 8px #ff1e56;
+      margin-bottom: 1rem;
+    }
+
+    .redirect-box p {
+      font-size: 1.1rem;
+      color: #e0e0e0;
+    }
+  </style>
+
+  <div class="container redirect-box">
+    <h3>Welcome, {{ user.role|capfirst }} {{ user.username }}!</h3>
+    <p>Redirecting to your home page...</p>
+    <meta http-equiv="refresh" content="1;url={{ target_url }}">
+    <script>
+      setTimeout(function () {
+        window.location.href = "{{ target_url }}";
+      }, 500);
+    </script>
+  </div>
+{% endblock hero_content %}

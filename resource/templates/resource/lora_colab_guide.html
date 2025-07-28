@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block hero_content %}
+  <style>
+    .training-header {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 10px #ff1e56;
+    }
+
+    .training-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(6px);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(255, 30, 86, 0.2);
+      color: #ddd;
+    }
+
+    .training-card ol li {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .training-card a {
+      color: #ff1e56;
+      text-decoration: underline;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 2px solid #ff1e56;
+      color: #ff1e56;
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 12px rgba(255, 30, 86, 0.5);
+    }
+
+    code {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.95em;
+      color: #ff8ab3;
+    }
+  </style>
+
+  <div class="container py-5">
+    <div class="col-lg-10 mx-auto">
+      <h1 class="display-5 fw-bold mb-4 training-header">📖 LoRA Training in Google Colab</h1>
+      <div class="card shadow-sm training-card">
+        <div class="card-body">
+          <ol>
+            <li><strong>Prepare your dataset:</strong> At least 20–100 images of your subject, ideally with captions.</li>
+            <li><strong>Upload dataset to Google Drive:</strong> Organize it into folders (e.g., <code>dataset/images</code> and <code>dataset/captions</code>).</li>
+            <li><strong>Open the <a href="https://colab.research.google.com/github/kohya-ss/sd-scripts/blob/main/train_network_GUI_colab.ipynb" target="_blank">Colab Notebook</a>:</strong> and follow the cells step-by-step.</li>
+            <li><strong>Adjust your training settings:</strong> Pick model, image resolution, batch size, learning rate, and steps.</li>
+            <li><strong>Start training:</strong> Run all training cells. Monitor RAM/GPU usage on Colab.</li>
+            <li><strong>Download your trained LoRA:</strong> Your model will be saved to your Drive. Test it in tools like Automatic1111 or ComfyUI.</li>
+          </ol>
+          <a href="{% url 'lora_resources' %}" class="btn btn-secondary mt-4">← Back to LoRA Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

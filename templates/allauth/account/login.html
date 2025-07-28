@@ -1,0 +1,63 @@
+{% block hero_content %}
+  <style>
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(6px);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.25);
+      color: #e0e0e0;
+    }
+
+    .card-header {
+      background: rgba(255, 30, 86, 0.2);
+      border-bottom: 1px solid rgba(255, 30, 86, 0.3);
+    }
+
+    .card-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 10px #ff1e56;
+    }
+
+    .btn-google {
+      background-color: #ff1e56;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border: 2px solid #ff1e56;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px rgba(255, 30, 86, 0.4);
+    }
+
+    .btn-google:hover {
+      background-color: #000;
+      color: #ff1e56;
+      border-color: #ff1e56;
+      box-shadow: 0 0 18px rgba(255, 30, 86, 0.6);
+    }
+
+    .btn-google:focus {
+      box-shadow: 0 0 0 0.25rem rgba(255, 30, 86, 0.5);
+    }
+  </style>
+
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-header text-center">
+            <h1 class="mb-0">{% trans "Sign In" %}</h1>
+          </div>
+          <div class="card-body text-center">
+            {% provider_login_url "google" process="login" as google_login_url %}
+            <a href="{{ google_login_url }}" class="btn btn-google btn-lg d-block py-3">
+              <span class="fw-bold">{% trans "Sign in with Google" %}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock hero_content %}

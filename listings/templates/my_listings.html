@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block hero_content %}
+<div class="container my-5">
+  <h2 class="mb-4">My Listings</h2>
+  <div class="row">
+    {% for listing in listings %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if listing.image %}
+            <img src="{{ listing.image.url }}" class="card-img-top" alt="{{ listing.title }}">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ listing.title }}</h5>
+            <p class="card-text">{{ listing.description|truncatewords:20 }}</p>
+            <div class="mt-auto">
+              <a href="{% url 'listing_detail' listing.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <a href="{% url 'item_delete' listing.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col">
+        <p>You have not created any listings.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

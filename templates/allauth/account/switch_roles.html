@@ -1,0 +1,89 @@
+{% block extra_head %}
+  <style>
+    .container-full {
+      height: calc(100vh - 80px);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(6px);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.25);
+      color: #e0e0e0;
+      font-size: 0.9rem;
+    }
+
+    .card-header {
+      background: rgba(255, 30, 86, 0.15);
+      border-bottom: 1px solid rgba(255, 30, 86, 0.3);
+      text-align: center;
+    }
+
+    .card-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: #ff1e56;
+      text-shadow: 0 0 10px #ff1e56;
+      margin: 0;
+    }
+
+    .card-body p {
+      color: #ccc;
+    }
+
+    .btn-outline-primary,
+    .btn-outline-secondary {
+      border-radius: 30px;
+      font-weight: bold;
+      padding: 0.5rem 1.2rem;
+      transition: 0.3s ease;
+    }
+
+    .btn-outline-primary {
+      border: 2px solid #ff1e56;
+      color: #ff1e56;
+    }
+
+    .btn-outline-primary:hover {
+      background-color: #ff1e56;
+      color: #000;
+      box-shadow: 0 0 10px rgba(255, 30, 86, 0.5);
+    }
+
+    .btn-outline-secondary {
+      border: 2px solid #aaa;
+      color: #aaa;
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: #aaa;
+      color: #000;
+      box-shadow: 0 0 10px rgba(170, 170, 170, 0.4);
+    }
+  </style>
+{% endblock extra_head %}
+
+{% block hero_content %}
+<div class="container-fluid p-0 container-full">
+  <div class="d-flex align-items-center justify-content-center h-100">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3 class="mb-0">{% trans "Switch Role" %}</h3>
+        </div>
+        <div class="card-body">
+          <p class="text-center">{% trans "Select your desired role:" %}</p>
+          <div class="d-grid gap-2">
+            <a href="{% url 'switch_role_librarian' %}" class="btn btn-outline-primary">
+              {% trans "Switch to Librarian" %}
+            </a>
+            <a href="{% url 'switch_role_patron' %}" class="btn btn-outline-secondary">
+              {% trans "Switch to Patron" %}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock hero_content %}

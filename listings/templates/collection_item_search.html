@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block hero_content %}
+<div class="container my-5">
+  <h2 class="mb-4 text-white">Add Items to Collection: {{ collection.title }}</h2>
+  
+  <!-- Search Form -->
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Search items" value="{{ query }}">
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+  </form>
+  
+  <!-- Items Grid -->
+  {% if items %}
+  <div class="row">
+    {% for item in items %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          {% if item.image %}
+            <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ item.title }}</h5>
+            <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+            <!-- Add to Collection Form -->
+            <div class="mt-auto">
+              <form method="post" action="{% url 'collection_add_item' collection.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="item_id" value="{{ item.pk }}">
+                <button type="submit" class="btn btn-success btn-sm">Add to Collection</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="alert alert-info">No items found.</div>
+  {% endif %}
+  
+  <!-- Back to Collection Details -->
+  <div class="mt-4">
+    <a href="{% url 'collection_detail' collection.pk %}" class="btn btn-secondary">Back to Collection</a>
+  </div>
+</div>
+{% endblock %}

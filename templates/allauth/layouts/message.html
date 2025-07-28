@@ -1,0 +1,45 @@
+{% load i18n %}
+{% if messages %}
+  <style>
+    .futuristic-alert {
+      background: rgba(50, 0, 0, 0.1);
+      border: 1px solid rgba(255, 30, 86, 0.3);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      color: #ff4d4d;
+      box-shadow: 0 0 12px rgba(255, 30, 86, 0.15);
+      transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .futuristic-alert:hover {
+      box-shadow: 0 0 20px rgba(255, 30, 86, 0.4);
+    }
+
+    .futuristic-alert h4 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      text-shadow: 0 0 6px #ff1e56;
+    }
+
+    .futuristic-alert ul {
+      padding-left: 1.25rem;
+    }
+
+    .futuristic-alert li {
+      margin-bottom: 0.3rem;
+      color: #ffd6d6;
+    }
+  </style>
+
+  <div class="futuristic-alert" role="alert">
+    <h4 class="alert-heading">{% trans "Message:" %}</h4>
+    <ul class="list-unstyled mb-0">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

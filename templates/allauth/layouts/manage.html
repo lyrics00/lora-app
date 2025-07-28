@@ -1,0 +1,47 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+  <style>
+    .futuristic-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 1rem;
+      min-height: 60vh;
+    }
+
+    .futuristic-panel {
+      width: 100%;
+      max-width: 800px;
+      padding: 2rem;
+      border-radius: 20px;
+      background: rgba(60, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .futuristic-panel:hover {
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.25);
+    }
+
+    .futuristic-panel h2 {
+      color: #ff4d4d;
+      text-shadow: 0 0 8px #ff1e56;
+    }
+
+    .futuristic-panel p {
+      color: #ffe6e6;
+    }
+  </style>
+
+  <div class="futuristic-wrapper">
+    <div class="futuristic-panel">
+      {% block page_content %}
+        <h2 class="text-center">Placeholder Content</h2>
+        <p class="text-center">Drop your content here. This panel is styled to match your red chrome-inspired UI.</p>
+      {% endblock page_content %}
+    </div>
+  </div>
+{% endblock content %}

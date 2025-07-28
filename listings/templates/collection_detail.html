@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block hero_content %}
+<div class="container py-5">
+  <!-- Messages Section -->
+  {% if messages %}
+    <div class="mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <!-- Collection Card -->
+  <div class="card mb-5 shadow">
+    <div class="row no-gutters">
+      {% if collection.image %}
+      <div class="col-md-4">
+        <img src="{{ collection.image.url }}" class="card-img" alt="{{ collection.title }}">
+      </div>
+      {% endif %}
+      <div class="col-md-8">
+        <div class="card-body">
+          <h2 class="card-title">
+            {{ collection.title }}
+            {% if collection.is_private %}
+              <span class="badge bg-danger ms-2">Private</span>
+            {% else %}
+              <span class="badge bg-success ms-2">Public</span>
+            {% endif %}
+          </h2>
+          <p class="card-text">{{ collection.description }}</p>
+          <p class="card-text text-muted">
+            <small>Created on {{ collection.created_at|date:"M d, Y" }}</small>
+          </p>
+          <!-- Creator Info -->
+          <div class="d-flex align-items-center mt-3">
+            {% if collection.creator.image %}
+              <img src="{{ collection.creator.image.url }}" alt="{{ collection.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% else %}
+              <img src="{% static 'images/default_profile.jpg' %}" alt="{{ collection.creator.username }}" class="rounded-circle me-2" width="50" height="50">
+            {% endif %}
+            <div>
+              <span class="h6 text-dark mb-0">{{ collection.creator.username }}</span>
+              {% if collection.creator.email %}
+                <br><small class="text-dark">{{ collection.creator.email }}</small>
+              {% endif %}
+              <br>
+              <span class="badge {% if collection.creator.role|lower == 'librarian' %}bg-success{% elif collection.creator.role|lower == 'patron' %}bg-danger{% else %}bg-secondary{% endif %}">
+                {{ collection.creator.role|title }}
+              </span>
+            </div>
+          </div>
+          <!-- Views & Likes Block -->
+          <div class="mt-3">
+            <small class="d-block">
+              <span id="collection-like-count-{{ collection.pk }}">{{ collection.like_count }}</span> likes&nbsp;
+              <a href="{% url 'like_collection' collection.pk %}" class="like-btn-collection" data-collection-id="{{ collection.pk }}" style="display:inline;" onmousedown="this.blur();" tabindex="-1">
+                {% if user in collection.liked_by.all %}
+                  <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="20" height="20">
+                {% else %}
+                  <img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="20" height="20">
+                {% endif %}
+              </a>&nbsp;|&nbsp;
+              <img src="{% static 'listing_images/view_icon.png' %}" alt="Views Icon" width="20" height="20" class="me-1">
+              {{ collection.views }} views
+            </small>
+          </div>
+          <!-- Action Buttons for Creator -->
+          {% if user.is_authenticated and user == collection.creator %}
+          <div class="mt-4">
+            <a href="{% url 'collection_edit' collection.pk %}" class="btn btn-warning me-2">Edit Collection</a>
+            <a href="{% url 'collection_delete' collection.pk %}" class="btn btn-danger me-2">Delete Collection</a>
+            <a href="{% url 'collection_item_search' collection.pk %}" class="btn btn-success me-2">Add Item from Search</a>
+            {% if user.is_authenticated and user.role|lower == "librarian" %}
+              <a href="{% url 'collection_create_item' collection.pk %}" class="btn btn-primary">Create Item for Collection</a>
+            {% endif %}
+            {% if collection.is_private %}
+              <div class="mt-3">
+                <a href="{% url 'select_allowed_users' collection.pk %}" class="btn btn-info">Select Allowed Users</a>
+              </div>
+              <!-- Display Currently Selected Users -->
+              {% if collection.allowed_users.all %}
+              <div class="mt-4">
+                <strong>Currently Selected Users:</strong>
+                <ul>
+                {% for user in collection.allowed_users.all %}
+                  <li>{{ user.username }}</li>
+                {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control" placeholder="Search items" value="{{ request.GET.q }}">
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+  </form>
+  <!-- Items in the Collection -->
+  <div class="mb-5">
+    <h3>Items in this Collection</h3>
+    {% if items %}
+      <div class="row">
+        {% for item in items %}
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+              {% else %}
+                <img src="{% static 'images/default_item.jpg' %}" class="card-img-top" alt="{{ item.title }}">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">{{ item.title }}</h5>
+                <p class="card-text">{{ item.description|truncatewords:15 }}</p>
+                <a href="{% url 'listing_detail' item.pk %}" class="btn btn-primary">View Item</a>
+                {% if user.is_authenticated and user == collection.creator %}
+                  <form method="post" action="{% url 'collection_remove_item' collection.pk %}" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_id" value="{{ item.pk }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Remove Item</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+    {% if request.GET.q and request.GET.q != '' %}
+      <div class="alert alert-info">No items match your search.</div>
+    {% else %}
+      <div class="alert alert-info">No items have been added to this collection.</div>
+    {% endif %}
+  {% endif %}
+</div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="container mb-5 p-4 bg-light rounded">
+    <h3>Comments</h3>
+    {% if comments %}
+      {% for comment in comments %}
+      <div class="comment-container p-3 mb-3 bg-white shadow-sm border rounded">
+        <div class="d-flex">
+          {% if comment.user.image %}
+            <img src="{{ comment.user.image.url }}" alt="{{ comment.user.username }}" class="rounded-circle me-3" width="50" height="50">
+          {% else %}
+            <img src="{% static 'images/default_profile.jpg' %}" alt="{{ comment.user.username }}" class="rounded-circle me-3" width="50" height="50">
+          {% endif %}
+          <div>
+            <h6 class="mb-1">
+              {{ comment.user.username }}
+              {% if comment.user == collection.creator %}
+                <span class="badge bg-info text-dark ms-2">Collection Owner</span>
+              {% endif %}
+              <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y h:i A" }}</small>
+            </h6>
+            <p class="mb-2">{{ comment.comment }}</p>
+            <div class="d-flex align-items-center">
+              <small>
+                <span id="comment-like-count-{{ comment.pk }}">{{ comment.like_count }}</span> likes
+              </small>
+              <a href="{% url 'like_comment' comment.pk %}" class="like-btn-comment ms-3" data-comment-id="{{ comment.pk }}" onmousedown="this.blur();" tabindex="-1">
+                {% if user in comment.liked_by.all %}
+                  <img src="{% static 'listing_images/like_icon.png' %}" alt="Liked Icon" width="16" height="16">
+                {% else %}
+                  <img src="{% static 'listing_images/no_like_icon.png' %}" alt="No Like Icon" width="16" height="16">
+                {% endif %}
+              </a>
+              {% if user.is_authenticated and comment.user == user %}
+                <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-sm btn-outline-danger ms-3">Delete</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-info">No comments have been added yet.</div>
+    {% endif %}
+  </div>
+
+  <!-- Comment Form -->
+  <div class="container mb-5">
+    <div class="card p-4">
+      <h4>Add a Comment</h4>
+      {% if user.is_authenticated %}
+        <form method="post">
+          {% csrf_token %}
+          {{ comment_form|crispy }}
+          <div class="text-right mt-3">
+            <button type="submit" class="btn btn-primary">Submit Comment</button>
+          </div>
+        </form>
+      {% else %}
+        <p>Please <a href="{% url 'account_login' %}">login</a> to add a comment.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- AJAX Script for Collection Like -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const likeBtn = document.querySelector('.like-btn-collection');
+    if (likeBtn) {
+      likeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.href;
+        const collectionId = this.getAttribute('data-collection-id');
+        const btn = this;
+        
+        fetch(url, { credentials: 'include' })
+          .then(response => {
+            if (!response.ok) throw new Error('Network error: ' + response.status);
+            return response.json();
+          })
+          .then(data => {
+            const likeCountEl = document.getElementById('collection-like-count-' + collectionId);
+            likeCountEl.textContent = data.like_count;
+            if (data.liked) {
+              btn.innerHTML = '<img src="{% static "listing_images/like_icon.png" %}" alt="Liked Icon" width="20" height="20">';
+            } else {
+              btn.innerHTML = '<img src="{% static "listing_images/no_like_icon.png" %}" alt="No Like Icon" width="20" height="20">';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    }
+  });
+</script>
+{% endblock %}
